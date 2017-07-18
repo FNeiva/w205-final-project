@@ -1,2 +1,7 @@
-# w205-final-project
-W205 Summer 2017 Final Project
+# W205 Summer 2017 Final Project
+# Dengue Prediction
+
+Felipe Campos
+Frank Shannon
+Josh Wilson
+Matthew Holmes
