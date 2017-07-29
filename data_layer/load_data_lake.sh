@@ -1,46 +1,73 @@
 #!/bin/bash
 
-# This script loads all the Hospital Compare files into the HDFS data lake for analysis
+##########################################################################################
+# Dengue Fever Prediction System
+# W205 Summer 2017 Final Project
+# Felipe Campos, Frank Shannon, Josh Wilson and Matthew Holmes
+##########################################################################################
+# Data Layer: Data Lake Loading script
+#
+# This is the first script in the pipeline, and in the data layer. It will pull the
+# original data from the source(s) and upload it to our data lake, as-is, without any
+# transformation. Data will be transformed later and stored in another location,
+# preserving the original data.
+##########################################################################################
+
+echo "################################################"
+echo "Dengue Fever Prediction System"
+echo "Data Layer: Data Lake Loading Script"
+echo "################################################"
+echo " "
+echo "Loading Data Lake:"
 
 # Set temporary directory for extracting raw data files from the zip file
-TMP_DIR=/data/tmp_ex1
+TMP_DIR=/data/tmp_data
 
 # Remove old temporary directory if exists and then recreate
+echo "		Creating temporary directory..."
 if [ -d $TMP_DIR ] ; then
 	rm -r $TMP_DIR
 fi
 mkdir $TMP_DIR
+echo "		Temporary directory created!"
 
-# Download the file to the temporary directory
-wget -O $TMP_DIR/hospitaldata.zip "https://data.medicare.gov/views/bg9k-emty/files/Nqcy71p9Ss2RSBWDmP77H1DQXcyacr2khotGbDHHW_s?content_type=application%2Fzip%3B%20charset%3Dbinary&filename=Hospital_Revised_Flatfiles.zip"
 
-# Unzip the file in the temporary directory
-unzip $TMP_DIR/hospitaldata.zip -d $TMP_DIR
+# Download files to the temporary directory
+echo "		Downloading data files to temporary directory..."
+wget -O $TMP_DIR/dengai_train_feature_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_features_train.csv"
+wget -O $TMP_DIR/dengai_train_labels_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_labels_train.csv"
+wget -O $TMP_DIR/dengai_test_feature_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_features_test.csv"
+echo "		Data downloaded successfully!"
 
 # Strip the first line and rename the files we are interested in
-tail -n +2 $TMP_DIR/"Hospital General Information.csv" > $TMP_DIR/hospitals.csv
-tail -n +2 $TMP_DIR/"Timely and Effective Care - Hospital.csv" > $TMP_DIR/effective_care.csv
-tail -n +2 $TMP_DIR/"Readmissions and Deaths - Hospital.csv" > $TMP_DIR/readmissions.csv
-tail -n +2 $TMP_DIR/"Measure Dates.csv" > $TMP_DIR/measures.csv
-tail -n +2 $TMP_DIR/"hvbp_hcahps_05_28_2015.csv" > $TMP_DIR/survey_responses.csv
+echo "		Stripping data headers..."
+tail -n +2 $TMP_DIR/"dengai_train_feature_data.csv" > $TMP_DIR/dengai_train_feature_noheader.csv
+tail -n +2 $TMP_DIR/"dengai_train_labels_data.csv" > $TMP_DIR/dengai_train_labels_noheader.csv
+tail -n +2 $TMP_DIR/"dengai_test_feature_data.csv" > $TMP_DIR/dengai_test_feature_noheader.csv
+echo "		Data headers stripped!"
 
 # Clean existing directories and files in HDFS to remove possible old files
-hdfs dfs -rm -r "/user/w205/hospital_compare"
+echo "		Clear existing data lake directory..."
+hdfs dfs -rm -r "/user/w205/dengue_prediction/original_data"
+echo "		Data lake directory cleared!"
 
 # Recreate directory structure in the HDFS data lake
-hdfs dfs -mkdir "/user/w205/hospital_compare"
-hdfs dfs -mkdir "/user/w205/hospital_compare/hospitals"
-hdfs dfs -mkdir "/user/w205/hospital_compare/effective_care"
-hdfs dfs -mkdir "/user/w205/hospital_compare/readmissions"
-hdfs dfs -mkdir "/user/w205/hospital_compare/measures"
-hdfs dfs -mkdir "/user/w205/hospital_compare/survey_responses"
+echo "		Creating data lake directory structure..."
+hdfs dfs -mkdir "/user/w205/dengue_prediction"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data"
+echo "		Directory structure created!"
 
 # Load files into the HDFS data lake directory structure
-hdfs dfs -put $TMP_DIR/hospitals.csv "/user/w205/hospital_compare/hospitals"
-hdfs dfs -put $TMP_DIR/effective_care.csv "/user/w205/hospital_compare/effective_care"
-hdfs dfs -put $TMP_DIR/readmissions.csv "/user/w205/hospital_compare/readmissions"
-hdfs dfs -put $TMP_DIR/measures.csv "/user/w205/hospital_compare/measures"
-hdfs dfs -put $TMP_DIR/survey_responses.csv "/user/w205/hospital_compare/survey_responses"
+echo "		Loading files into the data lake..."
+hdfs dfs -put $TMP_DIR/dengai_train_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
+hdfs dfs -put $TMP_DIR/dengai_train_labels_noheader.csv "/user/w205/dengue_prediction/original_data"
+hdfs dfs -put $TMP_DIR/dengai_test_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
+echo "		Data files loaded into the data lake!"
 
 # Remove temporary data directory used for extracting the raw data files
+echo "		Removing temporary directory..."
 rm -r $TMP_DIR
+echo "		Temporary directory removed!"
+
+# All done
+echo "Data lake loading finished successfully!"
