@@ -36,7 +36,7 @@ echo "	* Temporary directory created!"
 echo "	* Downloading data files to temporary directory..."
 wget -O $TMP_DIR/dengai_train_feature_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_features_train.csv"
 wget -O $TMP_DIR/dengai_train_labels_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_labels_train.csv"
-wget -O $TMP_DIR/dengai_test_feature_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_features_test.csv"
+#wget -O $TMP_DIR/dengai_test_feature_data.csv "https://s3.amazonaws.com/drivendata/data/44/public/dengue_features_test.csv"
 wget -O $TMP_DIR/brazil_datasus_notifications.csv "https://info.dengue.mat.br/dumps/2016-11-24_notificacao.csv"
 wget -O $TMP_DIR/brazil_cities.csv "https://info.dengue.mat.br/dumps/2016-11-24_municipio.csv"
 wget -O $TMP_DIR/brazil_weather_stations.csv "https://info.dengue.mat.br/dumps/2016-11-24_estacao_wu.csv"
@@ -47,12 +47,15 @@ echo "	* Data downloaded successfully!"
 echo "	* Stripping data headers..."
 tail -n +2 $TMP_DIR/"dengai_train_feature_data.csv" > $TMP_DIR/dengai_train_feature_noheader.csv
 tail -n +2 $TMP_DIR/"dengai_train_labels_data.csv" > $TMP_DIR/dengai_train_labels_noheader.csv
-tail -n +2 $TMP_DIR/"dengai_test_feature_data.csv" > $TMP_DIR/dengai_test_feature_noheader.csv
+#tail -n +2 $TMP_DIR/"dengai_test_feature_data.csv" > $TMP_DIR/dengai_test_feature_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_datasus_notifications.csv" > $TMP_DIR/brazil_datasus_notifications_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_cities.csv" > $TMP_DIR/brazil_cities_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_weather_stations.csv" > $TMP_DIR/brazil_weather_stations_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_weather_history.csv" > $TMP_DIR/brazil_weather_history_noheader.csv
 echo "	* Data headers stripped!"
+
+# Merge the DengAI CSV files
+paste -d {$TMP_DIR/dengai_train_feature_noheader,$TMP_DIR/dengai_train_labels_noheader}.csv > $TMP_DIR/dengai_data.csv
 
 # Clean existing directories and files in HDFS to remove possible old files
 echo "	* Clear existing data lake directory..."
@@ -67,9 +70,10 @@ echo "	* Directory structure created!"
 
 # Load files into the HDFS data lake directory structure
 echo "	* Loading files into the data lake..."
-hdfs dfs -put $TMP_DIR/dengai_train_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/dengai_train_labels_noheader.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/dengai_test_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
+#hdfs dfs -put $TMP_DIR/dengai_train_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
+#hdfs dfs -put $TMP_DIR/dengai_train_labels_noheader.csv "/user/w205/dengue_prediction/original_data"
+#hdfs dfs -put $TMP_DIR/dengai_test_feature_noheader.csv "/user/w205/dengue_prediction/original_data"
+hdfs dfs -put $TMP_DIR/dengai_data.csv "/user/w205/dengue_prediction/original_data"
 hdfs dfs -put $TMP_DIR/brazil_datasus_notifications_noheader.csv "/user/w205/dengue_prediction/original_data"
 hdfs dfs -put $TMP_DIR/brazil_cities_noheader.csv "/user/w205/dengue_prediction/original_data"
 hdfs dfs -put $TMP_DIR/brazil_weather_stations_noheader.csv "/user/w205/dengue_prediction/original_data"
