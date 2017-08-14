@@ -70,7 +70,7 @@ dengai_data_targets = dengai_data_targets.map(lambda x: x.split(','))
 dengai_data_targets = dengai_data_targets.map(lambda x: x[3])
 
 # Merge both
-dengai_data = dengai_data_features.union(dengai_data_targets)
+dengai_data = dengai_data_features.union(dengai_data_targets).collect()
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
