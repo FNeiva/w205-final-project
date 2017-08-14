@@ -43,8 +43,9 @@ print("	* Loading original data sources...")
 sc = SparkContext("local", "dengue")
 
 # Load all original data files
-dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
-dengai_data_targets = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_labels_noheader.csv")
+#dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
+#dengai_data_targets = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_labels_noheader.csv")
+dengai_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_data.csv")
 datasus_notif_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_datasus_notifications_noheader.csv")
 datasus_weather_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_history_noheader.csv")
 datasus_station_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_stations_noheader.csv")
@@ -60,17 +61,10 @@ print("	* Transforming DengAI dataset...")
 # 12. Max. air temp. in K, 13. Min. air temp. in K, 14. Precipitation kg/m^2, 15. Relative humidity in %,
 # 16. Sat. Precipitation in mm, 17. Specific Humidity in g/Kg, 18. Tdtr (?) in K, 19. Avg. Temperature in C,
 # 20. Station diurnal temp. range in C, 21. Station Max. Temp. in C, 22. Station Min. Temperature in C,
-# 23. Station precipitation in mm
+# 23. Station precipitation in mm, 24. City (repeated), 25. Year (repeated), 26. Week of Year (repeated),
+# 27. Number of cases
 dengai_data_features = dengai_data_features.map(lambda x: x.split(','))
-dengai_data_features = dengai_data_features.map(lambda x: (x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22])).zipWithIndex()
-
-# For the target dataset, the columns are:
-# 0. City, 1. Year, 2. Week of Year, 3. Number of cases
-dengai_data_targets = dengai_data_targets.map(lambda x: x.split(','))
-dengai_data_targets = dengai_data_targets.map(lambda x: (x[3])).zipWithIndex()
-
-# Merge both
-dengai_data = dengai_data_features.join(dengai_data_targets)
+dengai_data_features = dengai_data_features.map(lambda x: (x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22],x[27]))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
