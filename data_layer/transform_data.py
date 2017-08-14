@@ -29,6 +29,7 @@
 ##########################################################################################
 
 import pyspark
+from pyspark import SparkContext
 
 print("################################################")
 print("Dengue Fever Prediction System")
