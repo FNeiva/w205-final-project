@@ -62,12 +62,12 @@ print("	* Transforming DengAI dataset...")
 # 20. Station diurnal temp. range in C, 21. Station Max. Temp. in C, 22. Station Min. Temperature in C,
 # 23. Station precipitation in mm
 dengai_data_features = dengai_data_features.map(lambda x: x.split(','))
-dengai_data_features = dengai_data_features.map(lambda x: (x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22]))
+dengai_data_features = dengai_data_features.map(lambda x: (x[0]+'-'+x[1]+'-'x[2],x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22]))
 
 # For the target dataset, the columns are:
 # 0. City, 1. Year, 2. Week of Year, 3. Number of cases
 dengai_data_targets = dengai_data_targets.map(lambda x: x.split(','))
-dengai_data_targets = dengai_data_targets.map(lambda x: x[3])
+dengai_data_targets = dengai_data_targets.map(lambda x: x[0]+'-'+x[1]+'-'+x[2],x[3])
 
 # Merge both
 dengai_data = dengai_data_features.join(dengai_data_targets)
