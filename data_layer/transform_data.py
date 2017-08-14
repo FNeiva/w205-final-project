@@ -28,8 +28,10 @@
 #
 ##########################################################################################
 
-import pyspark
 from pyspark import SparkContext
+from pyspark.sql import Row
+from pyspark.sql import SQLContext
+import datetime
 
 print("################################################")
 print("Dengue Fever Prediction System")
@@ -41,6 +43,7 @@ print("	* Loading original data sources...")
 
 # Initiate Spark Context
 sc = SparkContext("local", "dengue")
+sqlContext = SQLContext(sc)
 
 # Load all original data files
 #dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
@@ -64,12 +67,25 @@ print("	* Transforming DengAI dataset...")
 # 23. Station precipitation in mm, 24. City (repeated), 25. Year (repeated), 26. Week of Year (repeated),
 # 27. Number of cases
 dengai_data = dengai_data.map(lambda x: x.split(','))
-dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22],x[27]))
+dengai_cases = dengai_data.map(lambda x: Row(city=x[0],year=x[1],wkofyear=int(x[2]),airtemp=int(x[9]),avgtemp=int(x[10]),
+                                            dewpttemp=int(x[11]),maxtemp=int(x[12]),mintemp=int(x[13]),relhum=int(x[15]),
+                                            sphum=int(x[17]),avgtempc=int(x[19]),stationmaxtemp=int(x[21]),
+                                            stationmintemp=int(x[22]), numcases=int(x[27])))
+dengai_df = sqlContext.createDataFrame(dengai_cases)
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
 
-
+# DATASUS Notification data file columns are:
+# 0. ID, 1. Date of notification, 2. Week of Year of notification, 3. Year of notification, 4. Date of first sign,
+# 5. Week of Year of first sign, 6. Date of insertion, 7. Neighborhood, 8. Neighborhood ID, 9. City Geocode,
+# 10. Notification number, 11. CID Code (mapping to disease manifestation)
+datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
+datasus_notifs = datasus_notif_data.map(lambda x: Row(city=x[9],year=x[3],wkofyear=int(x[2])))
+datasus_df = sqlContext.createDataFrame(datasus_notifs)
+datasus_df = datasus_df.groupBy(['city','year','wkofyear']).count()
+datasus_df['numcases'] = datasus_df['count']
+datasus_df = datasus_df.drop('count') 
 
 print("	* DATASUS dataset transformed!")
 print("	* Merging datasets...")
@@ -78,8 +94,6 @@ print("	* Merging datasets...")
 
 print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
-
-dengai_data.saveAsTextFile("file:///data/test.txt")
 
 print("	* Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
