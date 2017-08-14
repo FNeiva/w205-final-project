@@ -67,7 +67,7 @@ dengai_data_features = dengai_data_features.map(lambda x: (x[0]+'-'+x[1]+'-'+x[2
 # For the target dataset, the columns are:
 # 0. City, 1. Year, 2. Week of Year, 3. Number of cases
 dengai_data_targets = dengai_data_targets.map(lambda x: x.split(','))
-dengai_data_targets = dengai_data_targets.map(lambda x: x[0]+'-'+x[1]+'-'+x[2],x[3])
+dengai_data_targets = dengai_data_targets.map(lambda x: (x[0]+'-'+x[1]+'-'+x[2],x[3]))
 
 # Merge both
 dengai_data = dengai_data_features.join(dengai_data_targets)
