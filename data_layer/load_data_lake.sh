@@ -54,8 +54,10 @@ tail -n +2 $TMP_DIR/"brazil_weather_stations.csv" > $TMP_DIR/brazil_weather_stat
 tail -n +2 $TMP_DIR/"brazil_weather_history.csv" > $TMP_DIR/brazil_weather_history_noheader.csv
 echo "	* Data headers stripped!"
 
+echo "	* Joining DengAI files..."
 # Merge the DengAI CSV files
-paste -d {$TMP_DIR/dengai_train_feature_noheader,$TMP_DIR/dengai_train_labels_noheader}.csv > $TMP_DIR/dengai_data.csv
+paste -d, {$TMP_DIR/dengai_train_feature_noheader,$TMP_DIR/dengai_train_labels_noheader}.csv > $TMP_DIR/dengai_data.csv
+echo "	* DengAI files joined!"
 
 # Clean existing directories and files in HDFS to remove possible old files
 echo "	* Clear existing data lake directory..."
