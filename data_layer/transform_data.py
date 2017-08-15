@@ -30,6 +30,8 @@
 
 import pyspark
 from pyspark import SparkContext
+import datetime
+import numpy as np
 
 print("################################################")
 print("Dengue Fever Prediction System")
@@ -64,11 +66,29 @@ print("	* Transforming DengAI dataset...")
 # 23. Station precipitation in mm, 24. City (repeated), 25. Year (repeated), 26. Week of Year (repeated),
 # 27. Number of cases
 dengai_data = dengai_data.map(lambda x: x.split(','))
-dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],x[9],x[10],x[11],x[12],x[13],x[15],x[17],x[19],x[21],x[22],x[27]))
+dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],float(x[10]),float(x[11]),float(x[12]),float(x[13]),float(x[15]),float(x[19]),int(x[27])))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
 
+# Set up a dictionary to map a weather station to a city geocode
+# There certainly is a better way of doing this by using latitude and longitude, for instance,
+# but we are doing this for ease of implementation for now
+station2cities = {"SBRJ":"3304557",             # Rio de Janeiro
+                  "SBBR":"5300108",             # Brasilia
+                  "SBSP":"3550308",             # Sao Paulo
+                  "SBSV":"2927408"}             # Salvador
+
+datasus_weather_data = datasus_weather_data.map(lambda x: x.split(','))
+datasus_weather_data = datasus_weather_data.filter(lambda x: x[0] in station2cities)
+datasus_weather = datasus_weather_data.map(lambda x: (station2cities[x[0]],
+                                                      datetime.strptime(x[3],"%Y-%m-%d").isocalendar()[0],      # Year
+                                                      datetime.strptime(x[3],"%Y-%m-%d").isocalendar()[1],      # Week of Year
+                                                      float(x[2])+273.15,
+                                                      243.04*(np.log(float(x[5])/100)+((17.625*float(x[2]))/(243.04+float(x[2]))))/(17.625-np.log(float(x[5])/100)-((17.625*float(x[2]))/(243.04+float(x[2])))),
+                                                      float(x[1]), float(x[0]), float(x[5]),float(x[2])))
+
+datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
 
 
 print("	* DATASUS dataset transformed!")
@@ -79,7 +99,7 @@ print("	* Merging datasets...")
 print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
 
-dengai_data.saveAsTextFile("file:///data/test.txt")
+dengai_data.saveAsTextFile("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data")
 
 print("	* Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
