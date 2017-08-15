@@ -92,7 +92,7 @@ dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(Intege
 # Change city name
 dengai_cities = {"sj":"San Juan",
                  "iq":"Iquitos"}
-dengai_df = dengai_df.withColumn("city", dengai_cities[dengai_df["city"]])
+dengai_df = dengai_df.withColumn("city", dengai_cities.get("city"))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
