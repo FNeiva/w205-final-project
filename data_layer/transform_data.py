@@ -90,9 +90,14 @@ dengai_df = dengai_df.withColumn("rel_hum_pct", dengai_df["rel_hum_pct"].cast(Do
 dengai_df = dengai_df.withColumn("avg_temp_C", dengai_df["avg_temp_C"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(IntegerType()))
 # Change city name
+def translate(mapping):
+    def translate_(col):
+        return mapping.get(col)
+    return udf(translate_, StringType())
+
 dengai_cities = {"sj":"San Juan",
                  "iq":"Iquitos"}
-dengai_df = dengai_df.withColumn("city", dengai_cities.get("city"))
+dengai_df = dengai_df.withColumn("city", translate(dengai_cities)("city"))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
