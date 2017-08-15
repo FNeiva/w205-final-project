@@ -80,7 +80,7 @@ schema = StructType(fields)
 dengai_df = sqlContext.createDataFrame(dengai_data, schema)
 # Filter rows with null values
 for col in dengai_df.columns:
-    dengai_df = dengai_df.filter(df[col].isNotNull())
+    dengai_df = dengai_df.filter(dengai_df[col].isNotNull())
 # Change column types
 dengai_df = dengai_df.withColumn("avg_temp_K", dengai_df["avg_temp_K"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("dew_pt_temp_K", dengai_df["dew_pt_temp_K"].cast(DoubleType()))
