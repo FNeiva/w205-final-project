@@ -45,6 +45,7 @@ print("	* Loading original data sources...")
 
 # Initiate Spark Context
 sc = SparkContext("local", "dengue")
+sqlContext = SQLContext(sc)
 
 # Load all original data files
 #dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
