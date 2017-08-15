@@ -46,7 +46,6 @@ echo "	* Data downloaded successfully!"
 echo "	* Stripping data headers..."
 tail -n +2 $TMP_DIR/"dengai_train_feature_data.csv" > $TMP_DIR/dengai_train_feature_noheader.csv
 tail -n +2 $TMP_DIR/"dengai_train_labels_data.csv" > $TMP_DIR/dengai_train_labels_noheader.csv
-#tail -n +2 $TMP_DIR/"dengai_test_feature_data.csv" > $TMP_DIR/dengai_test_feature_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_datasus_notifications.csv" > $TMP_DIR/brazil_datasus_notifications_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_cities.csv" > $TMP_DIR/brazil_cities_noheader.csv
 tail -n +2 $TMP_DIR/"brazil_weather_stations.csv" > $TMP_DIR/brazil_weather_stations_noheader.csv
@@ -71,11 +70,11 @@ echo "	* Directory structure created!"
 
 # Load files into the HDFS data lake directory structure
 echo "	* Loading files into the data lake..."
-hdfs dfs -put $TMP_DIR/dengai_data.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/brazil_datasus_notifications_noheader.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/brazil_cities_noheader.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/brazil_weather_stations_noheader.csv "/user/w205/dengue_prediction/original_data"
-hdfs dfs -put $TMP_DIR/brazil_weather_history_noheader.csv "/user/w205/dengue_prediction/original_data"
+hdfs dfs -put $TMP_DIR/dengai_data.csv "/user/w205/dengue_prediction/original_data/dengai"
+hdfs dfs -put $TMP_DIR/brazil_datasus_notifications_noheader.csv "/user/w205/dengue_prediction/original_data/datasus_notifs"
+hdfs dfs -put $TMP_DIR/brazil_cities_noheader.csv "/user/w205/dengue_prediction/original_data/brazil_cities"
+hdfs dfs -put $TMP_DIR/brazil_weather_stations_noheader.csv "/user/w205/dengue_prediction/original_data/brazil_weather_stations"
+hdfs dfs -put $TMP_DIR/brazil_weather_history_noheader.csv "/user/w205/dengue_prediction/original_data/brazil_weather_history"
 echo "	* Data files loaded into the data lake!"
 
 # Remove temporary data directory used for extracting the raw data files

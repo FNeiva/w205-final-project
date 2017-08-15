@@ -30,6 +30,8 @@
 
 import pyspark
 from pyspark import SparkContext
+from pyspark.sql import SQLContext
+from pyspark.sql.types import *
 import datetime
 import numpy as np
 
@@ -47,11 +49,11 @@ sc = SparkContext("local", "dengue")
 # Load all original data files
 #dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
 #dengai_data_targets = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_labels_noheader.csv")
-dengai_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_data.csv")
-datasus_notif_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_datasus_notifications_noheader.csv")
-datasus_weather_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_history_noheader.csv")
-datasus_station_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_stations_noheader.csv")
-datasus_city_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_cities_noheader.csv")
+dengai_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai/dengai_data.csv")
+datasus_notif_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/datasus_notifs/brazil_datasus_notifications_noheader.csv")
+datasus_weather_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_history/brazil_weather_history_noheader.csv")
+datasus_station_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_stations/brazil_weather_stations_noheader.csv")
+datasus_city_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_cities/brazil_cities_noheader.csv")
 
 print("	* Original data sources loaded!")
 print("	* Transforming DengAI dataset...")
@@ -65,8 +67,27 @@ print("	* Transforming DengAI dataset...")
 # 20. Station diurnal temp. range in C, 21. Station Max. Temp. in C, 22. Station Min. Temperature in C,
 # 23. Station precipitation in mm, 24. City (repeated), 25. Year (repeated), 26. Week of Year (repeated),
 # 27. Number of cases
+
+# Split the data on ',''
 dengai_data = dengai_data.map(lambda x: x.split(','))
+# Map values we want
 dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],x[10],x[11],x[12],x[13],x[15],x[19],x[27]))
+# Build the schema and construct the Data Frame
+schemaString = 'city year wkofyear avg_temp_K dew_pt_temp_K max_temp_K min_temp_K rel_hum_pct avg_temp_C num_cases'
+fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
+schema = StructType(fields)
+dengai_df = sqlContext.createDataFrame(dengai_data, schema)
+# Filter rows with null values
+for col in dengai_df.columns:
+    dengai_df = dengai_df.filter(df[col].isNotNull())
+# Change column types
+dengai_df = dengai_df.withColumn("avg_temp_K", dengai_df["avg_temp_K"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("dew_pt_temp_K", dengai_df["dew_pt_temp_K"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("max_temp_K", dengai_df["max_temp_K"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("min_temp_K", dengai_df["min_temp_K"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("rel_hum_pct", dengai_df["rel_hum_pct"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("avg_temp_C", dengai_df["avg_temp_C"].cast(DoubleType()))
+dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(IntegerType()))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
@@ -94,12 +115,13 @@ datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
 print("	* DATASUS dataset transformed!")
 print("	* Merging datasets...")
 
-
+dengue_data = dengai_df
 
 print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
 
-dengai_data.saveAsTextFile("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data")
+# Use the spark-csv extension to write the file as CSV since we are using Spark 1.5
+dengue_data.write.format("com.databricks.spark.csv").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
 
 print("	* Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
