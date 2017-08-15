@@ -89,6 +89,10 @@ dengai_df = dengai_df.withColumn("min_temp_K", dengai_df["min_temp_K"].cast(Doub
 dengai_df = dengai_df.withColumn("rel_hum_pct", dengai_df["rel_hum_pct"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("avg_temp_C", dengai_df["avg_temp_C"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(IntegerType()))
+# Change city name
+dengai_cities = {"sj":"San Juan",
+                 "iq":"Iquitos"}
+dengai_df = dengai_df.withColumn("city", dengai_cities[dengai_df["city"]])
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
@@ -101,22 +105,83 @@ station2cities = {"SBRJ":"3304557",             # Rio de Janeiro
                   "SBSP":"3550308",             # Sao Paulo
                   "SBSV":"2927408"}             # Salvador
 
+# Split the weather data on ','
 datasus_weather_data = datasus_weather_data.map(lambda x: x.split(','))
-datasus_weather_data = datasus_weather_data.filter(lambda x: x[0] in station2cities)
-datasus_weather = datasus_weather_data.map(lambda x: (station2cities[x[0]],
-                                                      datetime.strptime(x[3],"%Y-%m-%d").isocalendar()[0],      # Year
-                                                      datetime.strptime(x[3],"%Y-%m-%d").isocalendar()[1],      # Week of Year
-                                                      float(x[2])+273.15,
-                                                      243.04*(np.log(float(x[5])/100)+((17.625*float(x[2]))/(243.04+float(x[2]))))/(17.625-np.log(float(x[5])/100)-((17.625*float(x[2]))/(243.04+float(x[2])))),
-                                                      float(x[1]), float(x[0]), float(x[5]),float(x[2])))
+# Get the values we want
+datasus_weather_data = datasus_weather_data.map(lambda x: (x[10],x[3],x[2],x[0],x[1],x[5]))
+# Build the schema and construct the Data Frame
+schemaStringDatasusWeather = 'station date avg_temp_C min_temp_C max_temp_C rel_hum_pct'
+fieldsDatasusWeather = [StructField(field_name, StringType(), True) for field_name in schemaStringDatasusWeather.split()]
+schemaDatasusWeather = StructType(fieldsDatasusWeather)
+datasus_weather_df = sqlContext.createDataFrame(datasus_weather_data, schemaDatasusWeather)
+# Filter only the stations in the dictionary
+datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities))
+# Filter rows with null values
+for col in datasus_weather_df:
+    datasus_weather_df = datasus_weather_df.filter(datasus_weather_df[col].isNotNull())
+# Convert numerical columns
+datasus_weather_df = datasus_weather_df.withColumn("avg_temp_C", datasus_weather_df["avg_temp_C"].cast(DoubleType()))
+datasus_weather_df = datasus_weather_df.withColumn("min_temp_C", datasus_weather_df["min_temp_C"].cast(DoubleType()))
+datasus_weather_df = datasus_weather_df.withColumn("max_temp_C", datasus_weather_df["max_temp_C"].cast(DoubleType()))
+datasus_weather_df = datasus_weather_df.withColumn("rel_hum_pct", datasus_weather_df["rel_hum_pct"].cast(DoubleType()))
+# Create new column converting station to city
+datasus_weather_df = datasus_weather_df.withColumn("city", station2cities[datasus_weather_df["station"]])
+# Create new column stripping the year from the date
+datasus_weather_df = datasus_weather_df.withColumn("year", datetime.strptime(datasus_weather_df["date"],"%Y-%m-%d").isocalendar()[0])
+# Create new column stripping the week of the year from the date
+datasus_weather_df = datasus_weather_df.withColumn("wkofyear", datetime.strptime(datasus_weather_df["date"],"%Y-%m-%d").isocalendar()[1])
+# Create new column converting temperatures to Kelvin
+datasus_weather_df = datasus_weather_df.withColumn("avg_temp_K", datasus_weather_df["avg_temp_C"]+273.15)
+datasus_weather_df = datasus_weather_df.withColumn("min_temp_K", datasus_weather_df["min_temp_C"]+273.15)
+datasus_weather_df = datasus_weather_df.withColumn("max_temp_K", datasus_weather_df["max_temp_C"]+273.15)
+# Create new column calculating Dew Point Temperature in Kelvin using data we have
+datasus_weather_df = datasus_weather_df.withColumn("dew_pt_temp_K",
+        (243.04*(np.log(datasus_weather_df["rel_hum_pct"]/100)+((17.625*datasus_weather_df["avg_temp_C"])/
+        (243.04+datasus_weather_df["avg_temp_C"])))/(17.625-np.log(datasus_weather_df["rel_hum_pct"]/100)-
+        ((17.625*datasus_weather_df["avg_temp_C"])/(243.04+datasus_weather_df["avg_temp_C"]))))+273.15)
+# Reorder and keep only some of the features
+datasus_weather_df = datasus_weather_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K",
+                                               "max_temp_K","min_temp_K","rel_hum_pct","avg_temp_C")
 
+# Split dengue case notification data on ','
 datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
+# Get only the values we want
+datasus_notif_data = datasus_notif_data.map(lambda x: (x[9],x[3],x[2],x[10]))
+# Build the schema and construct the Data Frame
+schemaStringDatasusNotifs = 'city year wkofyear notification_id'
+fieldsDatasusNotifs = [StructField(field_name, StringType(), True) for field_name in schemaStringDatasusNotifs.split()]
+schemaDatasusNotifs = StructType(fieldsDatasusNotifs)
+datasus_notif_df = sqlContext.createDataFrame(datasus_notif_data, schemaDatasusNotifs)
+# Filter rows with null values
+for col in datasus_notif_df:
+    datasus_notif_df = datasus_notif_df.filter(datasus_notif_df[col].isNotNull())
+# Filter cities not in the weather dataframe
+datasus_notif_df = datasus_notif_df.filter(datasus_notif_df["city"].isin(datasus_weather_df["city"]))
+# Aggregate a sum of noticiations by city, year and week of year
+datasus_notif_df = datasus_notif_df.groupBy(["city","year","wkofyear"]).count()
+# Rename count column
+datasus_notif_df = datasus_notif_df.selectExpr("city","year","wkofyear","count as num_cases")
+# Join dataframes
+join_condition = [datasus_notif_df.city_geocode == datasus_weather_df.city_geocode,
+                  datasus_notif_df.year == datasus_weather_df.year,
+                  datasus_notif_data.wkofyear == datasus_weather_df.wkofyear]
+datasus_df = datasus_notif_df.join(datasus_weather_df,join_condition,"inner")
+# Change city geocode by city name
+# Ideally, this would be done by using the cities data, but for now we'll use a simple dictionary
+geocode2city = {"3304557":"Rio de Janeiro",
+                "5300108":"Brasilia",
+                "3550308":"Sao Paulo",
+                "2927408":"Salvador"}
+datasus_df = datasus_df.withColumn("city",geocode2city[datasus_df["city"]])
+# Reorder all columns
+datasus_df = datasus_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K",
+                               "max_temp_K","min_temp_K","rel_hum_pct","avg_temp_C","num_cases")
 
 
 print("	* DATASUS dataset transformed!")
 print("	* Merging datasets...")
 
-dengue_data = dengai_df
+dengue_data = dengai_df.union(datasus_df)
 
 print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
