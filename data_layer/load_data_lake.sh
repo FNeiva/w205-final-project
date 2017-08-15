@@ -66,6 +66,11 @@ echo "	* Data lake directory cleared!"
 echo "	* Creating data lake directory structure..."
 hdfs dfs -mkdir "/user/w205/dengue_prediction"
 hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data/dengai"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data/datasus_notifs"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data/brazil_cities"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data/brazil_weather_stations"
+hdfs dfs -mkdir "/user/w205/dengue_prediction/original_data/brazil_weather_history"
 echo "	* Directory structure created!"
 
 # Load files into the HDFS data lake directory structure
