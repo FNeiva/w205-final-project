@@ -55,7 +55,7 @@ WITH SERDEPROPERTIES (
   "escapeChar" = '\\'
 )
 STORED AS TEXTFILE
-LOCATION '/user/w205/dengue_prediction/original_data/dengai_data.csv';
+LOCATION '/user/w205/dengue_prediction/transformed_data/dengue_data';
 
 
 -- Create Dengue History data table
