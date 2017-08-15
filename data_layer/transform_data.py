@@ -66,7 +66,7 @@ print("	* Transforming DengAI dataset...")
 # 23. Station precipitation in mm, 24. City (repeated), 25. Year (repeated), 26. Week of Year (repeated),
 # 27. Number of cases
 dengai_data = dengai_data.map(lambda x: x.split(','))
-dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],float(x[10]),float(x[11]),float(x[12]),float(x[13]),float(x[15]),float(x[19]),int(x[27])))
+dengai_data = dengai_data.map(lambda x: (x[0],x[1],x[2],x[10],x[11],x[12],x[13],x[15],x[19],x[27]))
 
 print("	* DengAI dataset transformed!")
 print("	* Transforming DATASUS dataset...")
