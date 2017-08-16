@@ -171,11 +171,9 @@ datasus_notif_df = datasus_notif_df.groupBy(["city","year","wkofyear"]).count()
 # Rename count column
 datasus_notif_df = datasus_notif_df.selectExpr("city","year","wkofyear","count as num_cases")
 # Join dataframes
-print(datasus_notif_df.columns)
-print(datasus_weather_df.columns)
-join_condition = [datasus_notif_df.city == datasus_weather_df.city,
-                  datasus_notif_df.year == datasus_weather_df.year,
-                  datasus_notif_data.wkofyear == datasus_weather_df.wkofyear]
+join_condition = [datasus_notif_df["city"] == datasus_weather_df["city"],
+                  datasus_notif_df["year"] == datasus_weather_df["year"],
+                  datasus_notif_data["wkofyear"] == datasus_weather_df["wkofyear"]]
 datasus_df = datasus_notif_df.join(datasus_weather_df,join_condition,"inner")
 # Change city geocode by city name
 # Ideally, this would be done by using the cities data, but for now we'll use a simple dictionary
