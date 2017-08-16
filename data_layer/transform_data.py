@@ -49,8 +49,6 @@ sc = SparkContext("local", "dengue")
 sqlContext = SQLContext(sc)
 
 # Load all original data files
-#dengai_data_features = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_feature_noheader.csv")
-#dengai_data_targets = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai_train_labels_noheader.csv")
 dengai_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/dengai/dengai_data.csv")
 datasus_notif_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/datasus_notifs/brazil_datasus_notifications_noheader.csv")
 datasus_weather_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_weather_history/brazil_weather_history_noheader.csv")
