@@ -29,12 +29,12 @@
 ##########################################################################################
 
 import pyspark
+import numpy as np
+import pyspark.sql.functions as psf
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
-from pyspark.sql.functions import udf
 from datetime import datetime
-import numpy as np
 
 print("################################################")
 print("Dengue Fever Prediction System")
@@ -94,7 +94,7 @@ dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(Intege
 def translate(mapping):
     def translate_(col):
         return mapping.get(col)
-    return udf(translate_, StringType())
+    return psf.udf(translate_, StringType())
 
 dengai_cities = {"sj":"San Juan",
                  "iq":"Iquitos"}
@@ -136,10 +136,10 @@ for col in datasus_weather_df.columns:
 # Create new column converting station to city
 datasus_weather_df = datasus_weather_df.withColumn("city", translate(station2cities)("station"))
 # Create new column stripping the year from the date
-getYear =  udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[0], StringType())
+getYear =  psf.udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[0], StringType())
 datasus_weather_df = datasus_weather_df.withColumn("year", getYear(datasus_weather_df["date"]))
 # Create new column stripping the week of the year from the date
-getWeekOfYear =  udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[1], StringType())
+getWeekOfYear =  psf.udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[1], StringType())
 datasus_weather_df = datasus_weather_df.withColumn("wkofyear", getWeekOfYear(datasus_weather_df["date"]))
 # Create new column converting temperatures to Kelvin
 datasus_weather_df = datasus_weather_df.withColumn("avg_temp_K", datasus_weather_df["avg_temp_C"]+273.15)
@@ -149,22 +149,28 @@ datasus_weather_df = datasus_weather_df.withColumn("max_temp_K", datasus_weather
 def calculateDewPoint(avg_temp_C,rel_hum_pct):
     dp=(243.04*(np.log(rel_hum_pct/100)+((17.625*avg_temp_C)/(243.04+avg_temp_C)))/(17.625-np.log(rel_hum_pct/100)-((17.625*avg_temp_C)/(243.04+avg_temp_C))))+273.15
     return dp.item()
-udfDewPoint = udf(calculateDewPoint, DoubleType())
+udfDewPoint = psf.udf(calculateDewPoint, DoubleType())
 datasus_weather_df = datasus_weather_df.withColumn("dew_pt_temp_K",udfDewPoint(datasus_weather_df["avg_temp_C"],datasus_weather_df["rel_hum_pct"]))
-aggregations = {"avg_temp_C":"avg",
-                "min_temp_C":"min",
-                "max_temp_C":"max",
-                "rel_hum_pct":"avg",
-                "avg_temp_K":"avg",
-                "min_temp_K":"min",
-                "max_temp_K":"max",
-                "dew_pt_temp_K":"avg"}
+#aggregations = {"avg_temp_C":"avg",
+#                "min_temp_C":"min",
+#                "max_temp_C":"max",
+#                "rel_hum_pct":"avg",
+#                "avg_temp_K":"avg",
+#                "min_temp_K":"min",
+#                "max_temp_K":"max",
+#                "dew_pt_temp_K":"avg"}
+aggregations = [psf.avg("avg_temp_C").alias("avg_temp_C"),
+                psf.min("min_temp_C").alias("min_temp_C"),
+                psf.max("max_temp_C").alias("max_temp_C"),
+                psf.avg("rel_hum_pct").alias("rel_hum_pct"),
+                psf.avg("avg_temp_K").alias("avg_temp_K"),
+                psf.min("min_temp_K").alias("min_temp_K"),
+                psf.max("max_temp_K").alias("max_temp_K"),
+                psf.avg("dew_pt_temp_K").alias("dew_pt_temp_K")]
 datasus_weather_df = datasus_weather_df.groupBy(["city","year","wkofyear"]).agg(aggregations)
 # Reorder, rename and keep only some of the features
-datasus_weather_df = datasus_weather_df.selectExpr("city","year","wkofyear","avg(avg_temp_K) as avg_temp_K",
-                                                   "avg(dew_pt_temp_K) as dew_pt_temp_K","max(max_temp_K) as max_temp_K",
-                                                   "min(min_temp_K) as min_temp_K","avg(rel_hum_pct) as rel_hum_pct",
-                                                   "avg(avg_temp_C) as avg_temp_C")
+datasus_weather_df = datasus_weather_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K","max_temp_K",
+                                                   "min_temp_K","rel_hum_pct","avg_temp_C")
 
 # Split dengue case notification data on ','
 datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
