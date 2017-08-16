@@ -188,7 +188,7 @@ datasus_df = datasus_df.select("city","year","wkofyear","avg_temp_K","dew_pt_tem
 print("	* DATASUS dataset transformed!")
 print("	* Merging datasets...")
 
-dengue_data = dengai_df.union(datasus_df)
+dengue_data = dengai_df.unionAll(datasus_df)
 
 print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
