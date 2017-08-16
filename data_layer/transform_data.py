@@ -205,7 +205,7 @@ print("	* Datasets merged!")
 print("	* Writing resulting dataset to HDFS...")
 
 # Use the spark-csv extension to write the file as CSV since we are using Spark 1.5
-dengue_data.write.format("com.databricks.spark.csv").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
+dengue_data.write.format("com.databricks.spark.csv").mode("overwrite").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
 
 print("	* Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
