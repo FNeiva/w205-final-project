@@ -120,11 +120,11 @@ schemaStringDatasusWeather = 'station date avg_temp_C min_temp_C max_temp_C rel_
 fieldsDatasusWeather = [StructField(field_name, StringType(), True) for field_name in schemaStringDatasusWeather.split()]
 schemaDatasusWeather = StructType(fieldsDatasusWeather)
 datasus_weather_df = sqlContext.createDataFrame(datasus_weather_data, schemaDatasusWeather)
-# Filter only the stations in the dictionary
-datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities.keys()))
 # Filter rows with null values
 for col in datasus_weather_df:
     datasus_weather_df = datasus_weather_df.filter(datasus_weather_df[col].isNotNull())
+# Filter only the stations in the dictionary
+datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities.keys()))
 # Convert numerical columns
 datasus_weather_df = datasus_weather_df.withColumn("avg_temp_C", datasus_weather_df["avg_temp_C"].cast(DoubleType()))
 datasus_weather_df = datasus_weather_df.withColumn("min_temp_C", datasus_weather_df["min_temp_C"].cast(DoubleType()))
