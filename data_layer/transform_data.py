@@ -130,6 +130,9 @@ datasus_weather_df = datasus_weather_df.withColumn("avg_temp_C", datasus_weather
 datasus_weather_df = datasus_weather_df.withColumn("min_temp_C", datasus_weather_df["min_temp_C"].cast(DoubleType()))
 datasus_weather_df = datasus_weather_df.withColumn("max_temp_C", datasus_weather_df["max_temp_C"].cast(DoubleType()))
 datasus_weather_df = datasus_weather_df.withColumn("rel_hum_pct", datasus_weather_df["rel_hum_pct"].cast(DoubleType()))
+# Filter rows with null values one more time after converting types
+for col in datasus_weather_df.columns:
+    datasus_weather_df = datasus_weather_df.filter(datasus_weather_df[col].isNotNull())
 # Create new column converting station to city
 datasus_weather_df = datasus_weather_df.withColumn("city", translate(station2cities)("station"))
 # Create new column stripping the year from the date
@@ -144,8 +147,6 @@ datasus_weather_df = datasus_weather_df.withColumn("min_temp_K", datasus_weather
 datasus_weather_df = datasus_weather_df.withColumn("max_temp_K", datasus_weather_df["max_temp_C"]+273.15)
 # Create new column calculating Dew Point Temperature in Kelvin using data we have
 def calculateDewPoint(avg_temp_C,rel_hum_pct):
-    print(avg_temp_C)
-    print(rel_hum_pct)
     dp=(243.04*(np.log(rel_hum_pct/100)+((17.625*avg_temp_C)/(243.04+avg_temp_C)))/(17.625-np.log(rel_hum_pct/100)-((17.625*avg_temp_C)/(243.04+avg_temp_C))))+273.15
     return dp.item()
 udfDewPoint = udf(calculateDewPoint, DoubleType())
