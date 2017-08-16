@@ -151,14 +151,14 @@ def calculateDewPoint(avg_temp_C,rel_hum_pct):
     return dp.item()
 udfDewPoint = psf.udf(calculateDewPoint, DoubleType())
 datasus_weather_df = datasus_weather_df.withColumn("dew_pt_temp_K",udfDewPoint(datasus_weather_df["avg_temp_C"],datasus_weather_df["rel_hum_pct"]))
-aggregations = [psf.avg(datasus_weather_df.avg_temp_C).alias("avg_temp_C"),
-                psf.min(datasus_weather_df.min_temp_C).alias("min_temp_C"),
-                psf.max(datasus_weather_df.max_temp_C).alias("max_temp_C"),
-                psf.avg(datasus_weather_df.rel_hum_pct).alias("rel_hum_pct"),
-                psf.avg(datasus_weather_df.avg_temp_K).alias("avg_temp_K"),
-                psf.min(datasus_weather_df.min_temp_K).alias("min_temp_K"),
-                psf.max(datasus_weather_df.max_temp_K).alias("max_temp_K"),
-                psf.avg(datasus_weather_df.dew_pt_temp_K).alias("dew_pt_temp_K")]
+aggregations = [psf.avg(datasus_weather_df.avg_temp_C),   #.alias("avg_temp_C")
+                psf.min(datasus_weather_df.min_temp_C),   #.alias("min_temp_C")
+                psf.max(datasus_weather_df.max_temp_C),   #.alias("max_temp_C")
+                psf.avg(datasus_weather_df.rel_hum_pct),  #.alias("rel_hum_pct")
+                psf.avg(datasus_weather_df.avg_temp_K),   #.alias("avg_temp_K")
+                psf.min(datasus_weather_df.min_temp_K),   #.alias("min_temp_K")
+                psf.max(datasus_weather_df.max_temp_K),   #.alias("max_temp_K")
+                psf.avg(datasus_weather_df.dew_pt_temp_K)]#.alias("dew_pt_temp_K")
 datasus_weather_df = datasus_weather_df.groupBy(["city","year","wkofyear"]).agg(aggregations)
 # Reorder, rename and keep only some of the features
 datasus_weather_df = datasus_weather_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K","max_temp_K",
