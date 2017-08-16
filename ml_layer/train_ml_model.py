@@ -18,7 +18,7 @@ from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
 from pyspark.mllib.regression import LabeledPoint
-from pyspark.mllib.tree import GradientBoostedTrees
+from pyspark.mllib.regression import LinearRegressionWithSGD
 from pyspark.mllib.linalg import SparseVector
 from pyspark.mllib.evaluation import RegressionMetrics
 
@@ -87,7 +87,7 @@ labeled_data = training_df.map(lambda x: LabeledPoint(x[-1],x[:-1]))
 # Separate training and testing data
 training_data, testing_data = labeled_data.randomSplit([0.8, 0.2])
 # Train the model
-ml_model = GradientBoostedTrees.trainRegressor(training_data, {}, numIterations=10)
+ml_model = LinearRegressionWithSGD.train(training_data, iterations=100)
 
 print("     * Model trained!")
 print("     * Testing model error... ")
@@ -104,7 +104,7 @@ print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
 print("     * Training model with full data... ")
 
 # Re-train model using full dataset
-ml_model = GradientBoostedTrees.trainRegressor(labeled_data, {}, numIterations=10)
+ml_model = LinearRegressionWithSGD.train(labeled_data, iterations=100)
 
 print("     * Persisting model to HDFS... ")
 
