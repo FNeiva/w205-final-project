@@ -121,7 +121,7 @@ fieldsDatasusWeather = [StructField(field_name, StringType(), True) for field_na
 schemaDatasusWeather = StructType(fieldsDatasusWeather)
 datasus_weather_df = sqlContext.createDataFrame(datasus_weather_data, schemaDatasusWeather)
 # Filter only the stations in the dictionary
-datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities))
+datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities.items()))
 # Filter rows with null values
 for col in datasus_weather_df:
     datasus_weather_df = datasus_weather_df.filter(datasus_weather_df[col].isNotNull())
@@ -131,7 +131,7 @@ datasus_weather_df = datasus_weather_df.withColumn("min_temp_C", datasus_weather
 datasus_weather_df = datasus_weather_df.withColumn("max_temp_C", datasus_weather_df["max_temp_C"].cast(DoubleType()))
 datasus_weather_df = datasus_weather_df.withColumn("rel_hum_pct", datasus_weather_df["rel_hum_pct"].cast(DoubleType()))
 # Create new column converting station to city
-datasus_weather_df = datasus_weather_df.withColumn("city", station2cities[datasus_weather_df["station"]])
+datasus_weather_df = datasus_weather_df.withColumn("city", translate(station2cities)("station"))
 # Create new column stripping the year from the date
 datasus_weather_df = datasus_weather_df.withColumn("year", datetime.strptime(datasus_weather_df["date"],"%Y-%m-%d").isocalendar()[0])
 # Create new column stripping the week of the year from the date
@@ -178,7 +178,7 @@ geocode2city = {"3304557":"Rio de Janeiro",
                 "5300108":"Brasilia",
                 "3550308":"Sao Paulo",
                 "2927408":"Salvador"}
-datasus_df = datasus_df.withColumn("city",geocode2city[datasus_df["city"]])
+datasus_df = datasus_df.withColumn("city",translate(geocode2city)("city"))
 # Reorder all columns
 datasus_df = datasus_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K",
                                "max_temp_K","min_temp_K","rel_hum_pct","avg_temp_C","num_cases")
