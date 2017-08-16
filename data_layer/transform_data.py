@@ -158,7 +158,7 @@ datasus_weather_df = datasus_weather_df.select("city","year","wkofyear","avg_tem
 # Split dengue case notification data on ','
 datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
 # Get only the values we want
-datasus_notif_data = datasus_notif_data.map(lambda x: (x[9],x[3],x[2],x[10]) if len(x) == 12 else (NULL,NULL,NULL,NULL))
+datasus_notif_data = datasus_notif_data.map(lambda x: (x[9],x[3],x[2],x[10]) if len(x) == 12 else (None,None,None,None))
 # Build the schema and construct the Data Frame
 schemaStringDatasusNotifs = 'city year wkofyear notification_id'
 fieldsDatasusNotifs = [StructField(field_name, StringType(), True) for field_name in schemaStringDatasusNotifs.split()]
