@@ -121,7 +121,7 @@ fieldsDatasusWeather = [StructField(field_name, StringType(), True) for field_na
 schemaDatasusWeather = StructType(fieldsDatasusWeather)
 datasus_weather_df = sqlContext.createDataFrame(datasus_weather_data, schemaDatasusWeather)
 # Filter rows with null values
-for col in datasus_weather_df:
+for col in datasus_weather_df.columns:
     datasus_weather_df = datasus_weather_df.filter(datasus_weather_df[col].isNotNull())
 # Filter only the stations in the dictionary
 datasus_weather_df = datasus_weather_df.filter(datasus_weather_df["station"].isin(station2cities.keys()))
@@ -159,7 +159,7 @@ fieldsDatasusNotifs = [StructField(field_name, StringType(), True) for field_nam
 schemaDatasusNotifs = StructType(fieldsDatasusNotifs)
 datasus_notif_df = sqlContext.createDataFrame(datasus_notif_data, schemaDatasusNotifs)
 # Filter rows with null values
-for col in datasus_notif_df:
+for col in datasus_notif_df.columns:
     datasus_notif_df = datasus_notif_df.filter(datasus_notif_df[col].isNotNull())
 # Filter cities not in the weather dataframe
 datasus_notif_df = datasus_notif_df.filter(datasus_notif_df["city"].isin(datasus_weather_df["city"]))
