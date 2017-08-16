@@ -133,9 +133,11 @@ datasus_weather_df = datasus_weather_df.withColumn("rel_hum_pct", datasus_weathe
 # Create new column converting station to city
 datasus_weather_df = datasus_weather_df.withColumn("city", translate(station2cities)("station"))
 # Create new column stripping the year from the date
-datasus_weather_df = datasus_weather_df.withColumn("year", datetime.strptime($"date","%Y-%m-%d").isocalendar()[0])
+getYear =  udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[0], StringType())
+datasus_weather_df = datasus_weather_df.withColumn("year", getYear(datasus_weather_df["date"]))
 # Create new column stripping the week of the year from the date
-datasus_weather_df = datasus_weather_df.withColumn("wkofyear", datetime.strptime($"date","%Y-%m-%d").isocalendar()[1])
+getWeekOfYear =  udf(lambda x: datetime.strptime(x, "%Y-%m-%d").isocalendar()[1], StringType())
+datasus_weather_df = datasus_weather_df.withColumn("wkofyear", getWeekOfYear(datasus_weather_df["date"]))
 # Create new column converting temperatures to Kelvin
 datasus_weather_df = datasus_weather_df.withColumn("avg_temp_K", datasus_weather_df["avg_temp_C"]+273.15)
 datasus_weather_df = datasus_weather_df.withColumn("min_temp_K", datasus_weather_df["min_temp_C"]+273.15)
