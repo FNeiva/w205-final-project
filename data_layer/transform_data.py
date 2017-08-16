@@ -151,9 +151,20 @@ def calculateDewPoint(avg_temp_C,rel_hum_pct):
     return dp.item()
 udfDewPoint = udf(calculateDewPoint, DoubleType())
 datasus_weather_df = datasus_weather_df.withColumn("dew_pt_temp_K",udfDewPoint(datasus_weather_df["avg_temp_C"],datasus_weather_df["rel_hum_pct"]))
-# Reorder and keep only some of the features
-datasus_weather_df = datasus_weather_df.select("city","year","wkofyear","avg_temp_K","dew_pt_temp_K",
-                                               "max_temp_K","min_temp_K","rel_hum_pct","avg_temp_C")
+aggregations = {"avg_temp_C":"avg",
+                "min_temp_C":"min",
+                "max_temp_C":"max",
+                "rel_hum_pct":"avg",
+                "avg_temp_K":"avg",
+                "min_temp_K":"min",
+                "max_temp_K":"max",
+                "dew_pt_temp_K":"avg"}
+datasus_weather_df = datasus_weather_df.groupBy(["city","year","wkofyear"]).agg(aggregations)
+# Reorder, rename and keep only some of the features
+datasus_weather_df = datasus_weather_df.selectExpr("city","year","wkofyear","avg(avg_temp_K) as avg_temp_K",
+                                                   "avg(dew_pt_temp_K) as dew_pt_temp_K","max(max_temp_K) as max_temp_K",
+                                                   "min(min_temp_K) as min_temp_K","avg(rel_hum_pct) as rel_hum_pct",
+                                                   "avg(avg_temp_C) as avg_temp_C")
 
 # Split dengue case notification data on ','
 datasus_notif_data = datasus_notif_data.map(lambda x: x.split(','))
