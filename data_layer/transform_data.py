@@ -144,7 +144,7 @@ datasus_weather_df = datasus_weather_df.withColumn("min_temp_K", datasus_weather
 datasus_weather_df = datasus_weather_df.withColumn("max_temp_K", datasus_weather_df["max_temp_C"]+273.15)
 # Create new column calculating Dew Point Temperature in Kelvin using data we have
 def calculateDewPoint(avg_temp_C,rel_hum_pct):
-    dp=(243.04*(np.log(rel_hum_pct/100)+((17.625*avg_temp_C)/(243.04+avg_temp_C)))/(17.625-np.log(rel_hum_pct/100)-((17.625*avg_temp_C)/(243.04+avg_temp_C))))+273.15)
+    dp=(243.04*(np.log(rel_hum_pct/100)+((17.625*avg_temp_C)/(243.04+avg_temp_C)))/(17.625-np.log(rel_hum_pct/100)-((17.625*avg_temp_C)/(243.04+avg_temp_C))))+273.15
     return dp
 udfDewPoint = udf(calculateDewPoint, DoubleType())
 datasus_weather_df = datasus_weather_df.withColumn("dew_pt_temp_K",udfDewPoint(datasus_weather_df["avg_temp_C"],datasus_weather_df["rel_hum_pct"]))
