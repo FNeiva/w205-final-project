@@ -165,7 +165,7 @@ datasus_notif_df = sqlContext.createDataFrame(datasus_notif_data, schemaDatasusN
 for col in datasus_notif_df.columns:
     datasus_notif_df = datasus_notif_df.filter(datasus_notif_df[col].isNotNull())
 # Filter cities not in the weather dataframe
-datasus_notif_df = datasus_notif_df.filter(datasus_notif_df["city"].isin(datasus_weather_df["city"]))
+datasus_notif_df = datasus_notif_df.filter(datasus_notif_df["city"].isin(station2cities.values()))
 # Aggregate a sum of noticiations by city, year and week of year
 datasus_notif_df = datasus_notif_df.groupBy(["city","year","wkofyear"]).count()
 # Rename count column
