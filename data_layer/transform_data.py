@@ -209,7 +209,7 @@ print("	* Performing transformation and writing resulting dataset to HDFS...")
 dengue_data.write.format("com.databricks.spark.csv").mode("overwrite").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
 
 print("	* Dataset HDFS write finished!")
-print(" * Setting dataset transformation for Machine Learning...")
+print("	* Setting dataset transformation for Machine Learning...")
 
 # Now we make a dataset for Machine Learning
 # This is to avoid further computation later when training the model
