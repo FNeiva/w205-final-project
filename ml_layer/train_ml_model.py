@@ -33,57 +33,60 @@ print("Performing Machine Learning model training:")
 sc = SparkContext("local", "dengue")
 sqlContext = SQLContext(sc)
 
-print("     * Reading transformed data... ")
+print("     * Reading transformed ML training data... ")
 
 # Load transformed data
-training_data = sc.textFile("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
+training_data = sc.textFile("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_ml_training_set.csv")
 # Split the data on ',''
 training_data = training_data.map(lambda x: x.split(','))
 # Map columns
-training_data = training_data.map(lambda x: (x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7],x[8],x[9]))
+training_data = training_data.map(lambda x: (int(x[0]),int(x[1]),int(x[2]),int(x[3]),float(x[4]),float(x[5]),float(x[6]),float(x[7]),float(x[8]),float(x[9]),int(x[10])))
+
 # Build the schema and construct the Data Frame
-schemaString = 'city year wkofyear avg_temp_K dew_pt_temp_K max_temp_K min_temp_K rel_hum_pct avg_temp_C num_cases'
+schemaString = 'city0 city1 city2 city3 avg_temp_K dew_pt_temp_K max_temp_K min_temp_K rel_hum_pct avg_temp_C num_cases'
 fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
 schema = StructType(fields)
-training_df = sqlContext.createDataFrame(training_data, schema)
-
-print("     * Transformed data read!")
-print("     * Reshaping the data for ML training... ")
-
-# We need to make dummy variables for each city
-cities = training_df.select("city").distinct().rdd.map(lambda r: r[0]).collect()
-colnames = []
-for city in cities:
-    column_name = "city_"+city.replace(" ","_")
-    training_df = training_df.withColumn(column_name, psf.when(training_df["city"] == city,1).otherwise(0))
-    colnames.append(column_name)
-# Drop one city from dummy variable to avoid multicollinearity
-colnames = colnames[:-1]
-
-# Change column types
-training_df = training_df.withColumn("avg_temp_K", training_df["avg_temp_K"].cast(DoubleType()))
-training_df = training_df.withColumn("dew_pt_temp_K", training_df["dew_pt_temp_K"].cast(DoubleType()))
-training_df = training_df.withColumn("max_temp_K", training_df["max_temp_K"].cast(DoubleType()))
-training_df = training_df.withColumn("min_temp_K", training_df["min_temp_K"].cast(DoubleType()))
-training_df = training_df.withColumn("rel_hum_pct", training_df["rel_hum_pct"].cast(DoubleType()))
-training_df = training_df.withColumn("avg_temp_C", training_df["avg_temp_C"].cast(DoubleType()))
-training_df = training_df.withColumn("num_cases", training_df["num_cases"].cast(IntegerType()))
+training_df = sqlContext.createDataFrame(training_data, schema).cache()
 
 # Clear rows with missing values, for sanity checking
 for col in training_df.columns:
     training_df = training_df.filter(training_df[col].isNotNull())
 
-# Select columns to be used
-colnames.append("avg_temp_K")
-colnames.append("dew_pt_temp_K")
-colnames.append("max_temp_K")
-colnames.append("min_temp_K")
-colnames.append("rel_hum_pct")
-colnames.append("avg_temp_C")
-colnames.append("num_cases")
-training_df = training_df.select(colnames).cache()
+print("     * Transformed data read!")
+#print("     * Reshaping the data for ML training... ")
 
-print("     * Data reshape finished!")
+# We need to make dummy variables for each city
+#cities = training_df.select("city").distinct().rdd.map(lambda r: r[0]).collect()
+#colnames = []
+#for city in cities:
+#    column_name = "city_"+city.replace(" ","_")
+#    training_df = training_df.withColumn(column_name, psf.when(training_df["city"] == city,1).otherwise(0))
+#    colnames.append(column_name)
+# Drop one city from dummy variable to avoid multicollinearity
+#colnames = colnames[:-1]
+
+# Change column types
+#training_df = training_df.withColumn("avg_temp_K", training_df["avg_temp_K"].cast(DoubleType()))
+#training_df = training_df.withColumn("dew_pt_temp_K", training_df["dew_pt_temp_K"].cast(DoubleType()))
+#training_df = training_df.withColumn("max_temp_K", training_df["max_temp_K"].cast(DoubleType()))
+#training_df = training_df.withColumn("min_temp_K", training_df["min_temp_K"].cast(DoubleType()))
+#training_df = training_df.withColumn("rel_hum_pct", training_df["rel_hum_pct"].cast(DoubleType()))
+#training_df = training_df.withColumn("avg_temp_C", training_df["avg_temp_C"].cast(DoubleType()))
+#training_df = training_df.withColumn("num_cases", training_df["num_cases"].cast(IntegerType()))
+
+
+
+# Select columns to be used
+#colnames.append("avg_temp_K")
+#colnames.append("dew_pt_temp_K")
+#colnames.append("max_temp_K")
+#colnames.append("min_temp_K")
+#colnames.append("rel_hum_pct")
+#colnames.append("avg_temp_C")
+#colnames.append("num_cases")
+#training_df = training_df.select(colnames).cache()
+
+#print("     * Data reshape finished!")
 print("     * Training test ML model... ")
 
 # Label the data points

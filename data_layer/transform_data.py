@@ -56,7 +56,7 @@ datasus_station_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original
 datasus_city_data = sc.textFile("hdfs:///user/w205/dengue_prediction/original_data/brazil_cities/brazil_cities_noheader.csv")
 
 print("	* Original data sources loaded!")
-print("	* Transforming DengAI dataset...")
+print("	* Setting up DengAI dataset transformation...")
 
 # Begin with DengAI, by dropping all non-weather features as we are not working with them at the moment
 # These are the file columns:
@@ -101,8 +101,8 @@ dengai_cities = {"sj":"San Juan",
                  "iq":"Iquitos"}
 dengai_df = dengai_df.withColumn("city", translate(dengai_cities)("city"))
 
-print("	* DengAI dataset transformed!")
-print("	* Transforming DATASUS dataset...")
+print("	* DengAI dataset transformation set!")
+print("	* Setting up DATASUS dataset transformation...")
 
 # Set up a dictionary to map a weather station to a city geocode
 # There certainly is a better way of doing this by using latitude and longitude, for instance,
@@ -197,16 +197,49 @@ datasus_df = datasus_df.select("city","year","wkofyear","avg_temp_K","dew_pt_tem
                                "max_temp_K","min_temp_K","rel_hum_pct","avg_temp_C","num_cases")
 
 
-print("	* DATASUS dataset transformed!")
+print("	* DATASUS dataset transformation set!")
 print("	* Merging datasets...")
 
-dengue_data = dengai_df.unionAll(datasus_df)
+dengue_data = dengai_df.unionAll(datasus_df).cache()
 
 print("	* Datasets merged!")
-print("	* Writing resulting dataset to HDFS...")
+print("	* Performing transformation and writing resulting dataset to HDFS...")
 
 # Use the spark-csv extension to write the file as CSV since we are using Spark 1.5
 dengue_data.write.format("com.databricks.spark.csv").mode("overwrite").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_data.csv")
+
+print("	* Dataset HDFS write finished!")
+print(" * Setting dataset transformation for Machine Learning...")
+
+# Now we make a dataset for Machine Learning
+# This is to avoid further computation later when training the model
+cities = dengue_data.select("city").distinct().rdd.map(lambda r: r[0]).collect()
+colnames = []
+for city in cities:
+    column_name = "city_"+city.replace(" ","_")
+    dengue_data = dengue_data.withColumn(column_name, psf.when(dengue_data["city"] == city,1).otherwise(0))
+    colnames.append(column_name)
+# Drop one city from dummy variable to avoid multicollinearity
+colnames = colnames[:-1]
+
+# Select columns to be used
+colnames.append("avg_temp_K")
+colnames.append("dew_pt_temp_K")
+colnames.append("max_temp_K")
+colnames.append("min_temp_K")
+colnames.append("rel_hum_pct")
+colnames.append("avg_temp_C")
+colnames.append("num_cases")
+ml_df = dengue_data.select(colnames).cache()
+
+# Clear rows with missing values, for sanity checking
+for col in ml_df.columns:
+    ml_df = ml_df.filter(ml_df[col].isNotNull())
+
+print("	* Transformation for machine learning set!")
+print("	* Performing transformation and writing resulting dataset to HDFS...")
+
+ml_df.write.format("com.databricks.spark.csv").mode("overwrite").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_ml_training_set.csv")
 
 print("	* Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
