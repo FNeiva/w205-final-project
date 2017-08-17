@@ -25,11 +25,20 @@ echo "Please wait."
 echo " "
 echo " "
 echo "Installing Dash packages for Python... "
-pip install dash==0.17.7                  # The core dash backend
-pip install dash-renderer==0.7.4          # The dash front-end
-pip install dash-html-components==0.7.0   # HTML components
-pip install dash-core-components==0.12.0  # Supercharged components
-pip install plotly==2.0.13                # Plotly graphing library used in examples
+# Need to install and use Python 2.7
+# AMI needs easy_install-2.7 and pip-2.7 for this
+wget https://bootstrap.pypa.io/ez_setup.py -O - | python2.7     # Install easy_install-2.7
+easy_install-2.7 pip                                            # Install pip2.7
+# Set back easy_install-2.6 and pip2.6 as defaults to avoid other stuff from breaking
+ln -sf /usr/bin/pip2.6 /usr/bin/pip
+ln -sf /usr/bin/pip2.6 /usr/bin/pip2
+ln -sf /usr/bin/easy_install-2.6 /usr/bin/easy_install
+# Now install Dash on Python 2.7
+pip2.7 install dash==0.17.7                                        # The core dash backend
+pip2.7 install dash-renderer==0.7.4                                # The dash front-end
+pip2.7 install dash-html-components==0.7.0                         # HTML components
+pip2.7 install dash-core-components==0.12.0                        # Supercharged components
+pip2.7 install plotly==2.0.13                                      # Plotly graphing library used in examples
 echo "Dash installed!"
 echo " "
 echo "Pre-requisite installation finished!"
