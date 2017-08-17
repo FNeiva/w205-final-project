@@ -31,7 +31,7 @@ print(" ")
 print("Performing Machine Learning model training:")
 
 # Initiate Spark Context
-sc = SparkContext()
+sc = SparkContext("local","dengue")
 sqlContext = SQLContext(sc)
 
 print("     * Reading transformed ML training data... ")
