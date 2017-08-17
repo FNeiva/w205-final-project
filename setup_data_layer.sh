@@ -18,12 +18,16 @@
 #
 ##########################################################################################
 
-echo "################################################"
+# The following export fixes problems with PySpark not finding the native Hadoop library
+LD_LIBRARY_PATH=/opt/jdk1.7.0_79/jre/lib/amd64/server/:/usr/lib/hadoop/lib/native/
+export LD_LIBRARY_PATH
+
+echo "##########################################################"
 echo "Dengue Fever Prediction System"
-echo "Data Layer Initialization Script"
-echo "################################################"
+echo "Data Layer Initialization and Update Script"
+echo "##########################################################"
 echo " "
-echo "This script will now setup and initialize the Data Layer."
+echo "This script will now initialize or update the Data Layer."
 echo "It will run other scripts to download, transform and store the required data."
 echo "This will probably take a few minutes, so please wait until it is finished."
 echo " "
@@ -49,4 +53,4 @@ echo " "
 echo " "
 echo "Step 3 of 3 done."
 echo " "
-echo "Data Layer Initialization Script Finished!"
+echo "Data Layer Initialization and Update Script Finished!"
