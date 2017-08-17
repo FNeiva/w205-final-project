@@ -84,25 +84,31 @@ colnames.append("num_cases")
 training_df = training_df.select(colnames).cache()
 
 print("     * Data reshape finished!")
-print("     * Training ML model... ")
+print("     * Training test ML model... ")
 
 # Label the data points
 labeled_data = training_df.map(lambda x: LabeledPoint(x[-1],x[:-1])).cache()
+# Separate training and testing data
+training_data, testing_data = labeled_data.randomSplit([0.8, 0.2])
 # Train the model
 ml_model = LinearRegressionWithSGD.train(training_data, iterations=100)
 
 print("     * Model trained!")
-#print("     * Testing model error... ")
+print("     * Testing model error... ")
 
 # Predict and calculate error metrics
-#predictions = ml_model.predict(testing_data.map(lambda r: r.features))
-#predictions.zip(testing_data.map(lambda r: r.label))
-#metrics = RegressionMetrics(predictions)
+predictions = ml_model.predict(testing_data.map(lambda r: r.features))
+predictions.zip(testing_data.map(lambda r: r.label))
+metrics = RegressionMetrics(predictions)
 
-#print("     * Model regression error metrics: ")
-#print("         - Mean Absolute Error: %.2f" % metrics.meanAbsoluteError)
-#print("         - Mean Squared Error: %.2f" % metrics.meanSquaredError)
-#print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
+print("     * Model regression error metrics: ")
+print("         - Mean Absolute Error: %.2f" % metrics.meanAbsoluteError)
+print("         - Mean Squared Error: %.2f" % metrics.meanSquaredError)
+print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
+print("     * Training model with full data... ")
+
+# Re-train model using full dataset
+ml_model = LinearRegressionWithSGD.train(labeled_data, iterations=100)
 
 print("     * Persisting model to HDFS... ")
 
