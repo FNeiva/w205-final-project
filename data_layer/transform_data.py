@@ -200,7 +200,7 @@ datasus_df = datasus_df.select("city","year","wkofyear","avg_temp_K","dew_pt_tem
 print("	* DATASUS dataset transformation set!")
 print("	* Merging datasets...")
 
-dengue_data = dengai_df.unionAll(datasus_df).cache()
+dengue_data = dengai_df.unionAll(datasus_df)
 
 print("	* Datasets merged!")
 print("	* Performing transformation and writing resulting dataset to HDFS...")
@@ -230,7 +230,7 @@ colnames.append("min_temp_K")
 colnames.append("rel_hum_pct")
 colnames.append("avg_temp_C")
 colnames.append("num_cases")
-ml_df = dengue_data.select(colnames).cache()
+ml_df = dengue_data.select(colnames)
 
 # Clear rows with missing values, for sanity checking
 for col in ml_df.columns:
