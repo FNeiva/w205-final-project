@@ -42,7 +42,7 @@ echo " "
 echo "Step 2 of 2: Training and persisting new model... "
 echo " "
 echo " "
-/data/spark15/bin/spark-submit ./data_layer/train_ml_model.py
+/data/spark15/bin/spark-submit ./ml_layer/train_ml_model.py
 echo " "
 echo "Step 2 of 2 done."
 echo " "
