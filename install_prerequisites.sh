@@ -39,6 +39,8 @@ pip2.7 install dash-renderer==0.7.4                                # The dash fr
 pip2.7 install dash-html-components==0.7.0                         # HTML components
 pip2.7 install dash-core-components==0.12.0                        # Supercharged components
 pip2.7 install plotly==2.0.13                                      # Plotly graphing library used in examples
+pip2.7 install numpy
+pip2.7 install pandas
 echo "Dash installed!"
 echo " "
 echo "Pre-requisite installation finished!"

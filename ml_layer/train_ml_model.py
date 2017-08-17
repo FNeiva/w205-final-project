@@ -69,6 +69,10 @@ training_df = training_df.withColumn("rel_hum_pct", training_df["rel_hum_pct"].c
 training_df = training_df.withColumn("avg_temp_C", training_df["avg_temp_C"].cast(DoubleType()))
 training_df = training_df.withColumn("num_cases", training_df["num_cases"].cast(IntegerType()))
 
+# Clear rows with missing values, for sanity checking
+for col in training_df.columns:
+    training_df = training_df.filter(training_df[col].isNotNull())
+
 # Select columns to be used
 colnames.append("avg_temp_K")
 colnames.append("dew_pt_temp_K")
@@ -77,34 +81,28 @@ colnames.append("min_temp_K")
 colnames.append("rel_hum_pct")
 colnames.append("avg_temp_C")
 colnames.append("num_cases")
-training_df = training_df.select(colnames)
+training_df = training_df.select(colnames).cache()
 
 print("     * Data reshape finished!")
-print("     * Training test ML model... ")
+print("     * Training ML model... ")
 
 # Label the data points
-labeled_data = training_df.map(lambda x: LabeledPoint(x[-1],x[:-1]))
-# Separate training and testing data
-training_data, testing_data = labeled_data.randomSplit([0.8, 0.2])
+labeled_data = training_df.map(lambda x: LabeledPoint(x[-1],x[:-1])).cache()
 # Train the model
-ml_model = LinearRegressionWithSGD.train(training_data, iterations=10)
+ml_model = LinearRegressionWithSGD.train(training_data, iterations=100)
 
 print("     * Model trained!")
-print("     * Testing model error... ")
+#print("     * Testing model error... ")
 
 # Predict and calculate error metrics
-predictions = ml_model.predict(testing_data.map(lambda r: r.features))
-predictions.zip(testing_data.map(lambda r: r.label))
-metrics = RegressionMetrics(predictions)
+#predictions = ml_model.predict(testing_data.map(lambda r: r.features))
+#predictions.zip(testing_data.map(lambda r: r.label))
+#metrics = RegressionMetrics(predictions)
 
-print("     * Model regression error metrics: ")
-print("         - Mean Absolute Error: %.2f" % metrics.meanAbsoluteError)
-print("         - Mean Squared Error: %.2f" % metrics.meanSquaredError)
-print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
-print("     * Training model with full data... ")
-
-# Re-train model using full dataset
-ml_model = LinearRegressionWithSGD.train(labeled_data, iterations=10)
+#print("     * Model regression error metrics: ")
+#print("         - Mean Absolute Error: %.2f" % metrics.meanAbsoluteError)
+#print("         - Mean Squared Error: %.2f" % metrics.meanSquaredError)
+#print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
 
 print("     * Persisting model to HDFS... ")
 

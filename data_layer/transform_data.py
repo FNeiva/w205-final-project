@@ -88,6 +88,9 @@ dengai_df = dengai_df.withColumn("min_temp_K", dengai_df["min_temp_K"].cast(Doub
 dengai_df = dengai_df.withColumn("rel_hum_pct", dengai_df["rel_hum_pct"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("avg_temp_C", dengai_df["avg_temp_C"].cast(DoubleType()))
 dengai_df = dengai_df.withColumn("num_cases", dengai_df["num_cases"].cast(IntegerType()))
+# Filter rows with null values after transformation
+for col in dengai_df.columns:
+    dengai_df = dengai_df.filter(dengai_df[col].isNotNull())
 # Change city name
 def translate(mapping):
     def translate_(col):
