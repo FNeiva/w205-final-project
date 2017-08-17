@@ -87,7 +87,7 @@ labeled_data = training_df.map(lambda x: LabeledPoint(x[-1],x[:-1]))
 # Separate training and testing data
 training_data, testing_data = labeled_data.randomSplit([0.8, 0.2])
 # Train the model
-ml_model = LinearRegressionWithSGD.train(training_data, iterations=100)
+ml_model = LinearRegressionWithSGD.train(training_data, iterations=10)
 
 print("     * Model trained!")
 print("     * Testing model error... ")
@@ -104,7 +104,7 @@ print("         - Root Mean Squared Error: %.2f" % metrics.rootMeanSquaredError)
 print("     * Training model with full data... ")
 
 # Re-train model using full dataset
-ml_model = LinearRegressionWithSGD.train(labeled_data, iterations=100)
+ml_model = LinearRegressionWithSGD.train(labeled_data, iterations=10)
 
 print("     * Persisting model to HDFS... ")
 
