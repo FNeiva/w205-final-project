@@ -236,10 +236,10 @@ ml_df = dengue_data.select(colnames)
 for col in ml_df.columns:
     ml_df = ml_df.filter(ml_df[col].isNotNull())
 
-print("	* Transformation for machine learning set!")
-print("	* Performing transformation and writing resulting dataset to HDFS...")
+print(" * Transformation for machine learning set!")
+print(" * Performing transformation and writing resulting dataset to HDFS...")
 
 ml_df.write.format("com.databricks.spark.csv").mode("overwrite").save("hdfs:///user/w205/dengue_prediction/transformed_data/dengue_ml_training_set.csv")
 
-print("	* Dataset HDFS write finished!")
+print(" * Dataset HDFS write finished!")
 print("Data lake transformation finished successfully!")
