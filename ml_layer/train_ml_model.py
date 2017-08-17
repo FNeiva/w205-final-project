@@ -49,6 +49,9 @@ training_data = training_data.filter(lambda x: ~np.isnan(x[0]) and ~np.isnan(x[1
                                                ~np.isnan(x[4]) and ~np.isnan(x[5]) and ~np.isnan(x[6]) and ~np.isnan(x[7]) and
                                                ~np.isnan(x[8]) and ~np.isnan(x[9]) and ~np.isnan(x[10]) and ~np.isnan(x[11])).cache()
 
+# We have to do something here to cache the dataset, otherwise it hangs later on due to a PySpark bug
+num_records = training_data.count()
+
 print("     * Transformed data read!")
 print("     * Training test ML model... ")
 
@@ -56,6 +59,9 @@ print("     * Training test ML model... ")
 labeled_data = training_data.map(lambda x: LabeledPoint(x[-1],x[:-1]))
 # Separate training and testing data
 train_data, test_data = labeled_data.randomSplit([0.8, 0.2])
+# Do something again to avoid the PySpark bug hang from manifesting
+num_train_recs = train_data.count()
+num_test_recs = test_data.count()
 # Train the model
 ml_model = GradientBoostedTrees.trainRegressor(train_data, {}, numIterations = 20, loss='leastAbsoluteError')
 
