@@ -31,7 +31,7 @@ print(" ")
 print("Performing Machine Learning model training:")
 
 # Initiate Spark Context
-sc = SparkContext("local", "dengue")
+sc = SparkContext()
 sqlContext = SQLContext(sc)
 
 print("     * Reading transformed ML training data... ")
@@ -64,7 +64,7 @@ print("     * Testing model error... ")
 
 # Predict and calculate error metrics
 predictions = ml_model.predict(test_data.map(lambda r: r.features))
-predictions.zip(test_data.map(lambda r: r.label))
+predictions = predictions.zip(test_data.map(lambda r: r.label))
 metrics = RegressionMetrics(predictions)
 
 print("     * Model regression error metrics: ")
