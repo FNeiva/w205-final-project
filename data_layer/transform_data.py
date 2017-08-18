@@ -213,7 +213,8 @@ print("	* Setting dataset transformation for Machine Learning...")
 
 # Now we make a dataset for Machine Learning
 # This is to avoid further computation later when training the model
-cities = dengue_data.select("city").distinct().rdd.map(lambda r: r[0]).collect()
+# We use a fixed list instead of reading from the data to make the column position predictable
+cities = ["San Juan","Iquitos","Rio de Janeiro","Brasilia","Sao Paulo","Salvador"]
 colnames = []
 for city in cities:
     column_name = "city_"+city.replace(" ","_")

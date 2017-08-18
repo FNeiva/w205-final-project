@@ -22,6 +22,9 @@
 LD_LIBRARY_PATH=/opt/jdk1.7.0_79/jre/lib/amd64/server/:/usr/lib/hadoop/lib/native/
 export LD_LIBRARY_PATH
 
+# Get script directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 echo "##########################################################"
 echo "Dengue Fever Prediction System"
 echo "Machine Learning Layer Initialization and Update Script"
@@ -35,7 +38,7 @@ echo " "
 echo "Step 1 of 2: Deleting current persisted model... "
 echo " "
 echo " "
-./ml_layer/delete_model.sh
+$DIR/ml_layer/delete_model.sh
 echo " "
 echo "Step 1 of 3 done."
 echo " "

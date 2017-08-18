@@ -24,11 +24,11 @@ echo "This script will now install all pre-requisites for running the project."
 echo "Please wait."
 echo " "
 echo " "
-echo "Installing Dash packages for Python... "
+echo "Installing Dash packages for Python 2.7... "
 # Need to install and use Python 2.7
 # AMI needs easy_install-2.7 and pip-2.7 for this
-wget https://bootstrap.pypa.io/ez_setup.py -O - | python2.7     # Install easy_install-2.7
-easy_install-2.7 pip                                            # Install pip2.7
+wget https://bootstrap.pypa.io/ez_setup.py -O - | python2.7        # Install easy_install-2.7
+easy_install-2.7 pip                                               # Install pip2.7
 # Set back easy_install-2.6 and pip2.6 as defaults to avoid other stuff from breaking
 ln -sf /usr/bin/pip2.6 /usr/bin/pip
 ln -sf /usr/bin/pip2.6 /usr/bin/pip2
@@ -38,9 +38,26 @@ pip2.7 install dash==0.17.7                                        # The core da
 pip2.7 install dash-renderer==0.7.4                                # The dash front-end
 pip2.7 install dash-html-components==0.7.0                         # HTML components
 pip2.7 install dash-core-components==0.12.0                        # Supercharged components
-pip2.7 install plotly==2.0.13                                      # Plotly graphing library used in examples
-pip2.7 install numpy
-pip2.7 install pandas
 echo "Dash installed!"
+echo " "
+echo "Installing Plotly package for Python 2.7... "
+pip2.7 install plotly==2.0.13                                      # Plotly graphing library used in examples
+echo "Plotly installed!"
+echo " "
+echo "Installing Numpy package for Python 2.7... "
+pip2.7 install numpy                                               # Install Numpy to use in PySpark
+echo "Numpy installed!"
+echo " "
+echo "Installing Pandas package for Python 2.7... "
+pip2.7 install pandas                                              # Install Pandas to use in PySpark
+echo "Pandas installed!"
+echo " "
+echo "Installing PsycoPG2 package for Python 2.7... "
+pip2.7 install psycopg2                                            # Install PsycoPG2 to use PostgreSQL
+echo "PsycoPG2 installed!"
+echo " "
+echo "Installing Dark Sky API Wrapper package for Python 2.7... "
+pip2.7 install python-forecastio                                   # Weather API for Dark Sky
+echo "Dark Sky API Wrapper installed!"
 echo " "
 echo "Pre-requisite installation finished!"
