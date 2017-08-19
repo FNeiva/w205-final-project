@@ -69,7 +69,7 @@ for record in records:
     avg_temp_C = record[8]
     num_cases = int(record[9])
     coords = city_coords[city]
-    text = city + "<br>Predicted number of cases: " + num_cases.astype(str)
+    text = city + "<br>Predicted number of cases: " + str(num_cases)
     text += "<br><br>Weather Forecast:<br>"
     text += "Temperature: " + avg_temp_K-273.15 + "°C (average), " + max_temp_K-273.15 + "°C (max), " + min_temp_K-273.15 + "°C (min)<br>"
     text += "Dew Point: " + dew_pt_temp_K-273.15 + "°C<br>"
