@@ -58,15 +58,16 @@ colors = { "High": "rgb(255,75,75)",
 # Set up the circles for the live map
 live_data = []
 for record in records:
-    city = record[0]
-    wkfrstday = record[1]
-    avg_temp_K = record[2]
-    dew_pt_temp_K = record[3]
-    max_temp_K = record[4]
-    min_temp_K = record[5]
-    rel_hum_pct = record[6]
-    avg_temp_C = record[7]
-    num_cases = record[8]
+    index = record[0]
+    city = record[1]
+    wkfrstday = record[2].strftime("%b. %d, %Y")
+    avg_temp_K = record[3]
+    dew_pt_temp_K = record[4]
+    max_temp_K = record[5]
+    min_temp_K = record[6]
+    rel_hum_pct = record[7]
+    avg_temp_C = record[8]
+    num_cases = int(record[9])
     coords = city_coords[city]
     text = city + "<br>Predicted number of cases: " + num_cases.astype(str)
     text += "<br><br>Weather Forecast:<br>"
