@@ -154,25 +154,25 @@ while True:
     # Update PostgreSQL table into week starting today, using UPSERT style query
     # Therefore, if there is a row for the current year and week start date, update it
     # If not, insert a new one
-    try:
-        conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
-        cur = conn.cursor()
-        for i in range(len(cities_pred)):
-            cur.execute("UPDATE predictions SET (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
+    #try:
+    conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
+    cur = conn.cursor()
+    for i in range(len(cities_pred)):
+        cur.execute("UPDATE predictions SET (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
                                                 rel_hum_pct, avg_temp_C, num_cases) = (%f,%f,%f,%f,%f,%f,%d)  \
                                                 WHERE city=%s AND wkfrstday=%s;",
                                                 (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                                                  preds[i],cities_pred[i],wkfrstday))
-            cur.execute("INSERT INTO predictions (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
+        cur.execute("INSERT INTO predictions (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
                                                   rel_hum_pct, avg_temp_C, num_cases) \
                         SELECT %f,%f,%f,%f,%f,%f,%d WHERE NOT EXISTS \
                         (SELECT 1 FROM predictions WHERE city=%s AND wkfrstday=%s);",
                         (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                          preds[i],cities_pred[i],wkfrstday))
-            conn.commit()
-            conn.close()
-    except:
-        print(str(datetime.now())+": Unable to update database table with new predictions!")
+        conn.commit()
+        conn.close()
+    #except:
+    #    print(str(datetime.now())+": Unable to update database table with new predictions!")
 
     time_end_pred = time.time()
     n_preds += 1
