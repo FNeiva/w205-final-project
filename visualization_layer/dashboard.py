@@ -37,7 +37,7 @@ try:
     # Connect and get
     conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
     cur = conn.cursor()
-    cur.execute("SELECT * FROM predictions WHERE wkfrstday=%s;",wkfrstday)
+    cur.execute("SELECT * FROM predictions WHERE wkfrstday = '%s';" % wkfrstday)
     records = cur.fetchall()
     conn.commit()
     conn.close()
