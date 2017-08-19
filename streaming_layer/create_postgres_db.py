@@ -61,8 +61,8 @@ try:
     cur = conn.cursor()
     cur.execute('''CREATE TABLE predictions
                         (index          SERIAL      PRIMARY KEY     NOT NULL,
-                         city           INT                         NOT NULL,
-                         wkfrstday      INT                         NOT NULL,
+                         city           TEXT                        NOT NULL,
+                         wkfrstday      DATE                        NOT NULL,
                          avg_temp_K     REAL                        NOT NULL,
                          dew_pt_temp_K  REAL                        NOT NULL,
                          max_temp_K     REAL                        NOT NULL,

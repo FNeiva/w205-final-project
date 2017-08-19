@@ -60,4 +60,7 @@ echo "Installing Dark Sky API Wrapper package for Python 2.7... "
 pip2.7 install python-forecastio                                   # Weather API for Dark Sky
 echo "Dark Sky API Wrapper installed!"
 echo " "
+echo "Cleaning up..."
+rm -f setuptools-33.1.1.zip
+echo " "
 echo "Pre-requisite installation finished!"
