@@ -101,7 +101,7 @@ layout = dict(
         showlegend = True,
         geo = dict(
             scope='america',
-            projection=dict( type='Mercator' ),
+            projection=dict( type='Natural earth' ),
             showland = True,
             landcolor = 'rgb(217, 217, 217)',
             subunitwidth=1,
