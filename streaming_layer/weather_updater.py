@@ -30,6 +30,9 @@ from pyspark.mllib.tree import GradientBoostedTrees
 from pyspark.mllib.tree import GradientBoostedTreesModel
 from pyspark.mllib.linalg import SparseVector
 from pyspark.mllib.evaluation import RegressionMetrics
+# Disable SSL warnings
+import requests.packages.urllib3
+requests.packages.urllib3.disable_warnings()
 
 print("################################################")
 print("Dengue Fever Prediction System")
