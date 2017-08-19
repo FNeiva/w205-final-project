@@ -150,6 +150,12 @@ while True:
     rdd = sc.parallelize(data)
     # Run prediction
     preds = ml_model.predict(rdd).collect()
+    # We are using regression, so it may predict negative values
+    # In this case, set them to 0
+    for pred in preds:
+        if (pred < 0):
+            pred = 0
+    # Get the first day of the prediction week
     wkfrstday = datetime.now().strftime("%Y-%m-%d")
     # Update PostgreSQL table into week starting today, using UPSERT style query
     # Therefore, if there is a row for the current year and week start date, update it
