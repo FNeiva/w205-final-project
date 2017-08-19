@@ -52,7 +52,7 @@ print(str(datetime.now())+": Loading trained ML model from HDFS...")
 
 # Load trained model from HDFS
 try:
-    ml_model = GradientBoostedTreesModel.load("hdfs:///user/w205/dengue_prediction/ml_model")
+    ml_model = GradientBoostedTreesModel.load(sc,"hdfs:///user/w205/dengue_prediction/ml_model")
 except:
     print(str(datetime.now())+": Unable to load trained model from HDFS!")
     print(str(datetime.now())+": Quitting...")

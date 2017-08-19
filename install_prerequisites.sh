@@ -54,10 +54,12 @@ echo "Pandas installed!"
 echo " "
 echo "Installing PsycoPG2 package for Python 2.7... "
 pip2.7 install psycopg2                                            # Install PsycoPG2 to use PostgreSQL
+pip install psycopg2                                            # Install PsycoPG2 to use PostgreSQL
 echo "PsycoPG2 installed!"
 echo " "
 echo "Installing Dark Sky API Wrapper package for Python 2.7... "
 pip2.7 install python-forecastio                                   # Weather API for Dark Sky
+pip install python-forecastio                                   # Weather API for Dark Sky
 echo "Dark Sky API Wrapper installed!"
 echo " "
 echo "Cleaning up..."
