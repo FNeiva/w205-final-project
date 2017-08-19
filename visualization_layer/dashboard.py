@@ -87,7 +87,7 @@ for record in records:
         lat = [coords["lat"]],
         text = [text],
         marker = dict(
-            size = num_cases,
+            size = np.log10(num_cases)*10,
             color = colors[bubble_color],
             line = dict(width=0.5, color='rgb(40,40,40)'),
             sizemode = 'area'
