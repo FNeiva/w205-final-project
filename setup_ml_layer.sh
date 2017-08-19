@@ -40,7 +40,7 @@ echo " "
 echo " "
 $DIR/ml_layer/delete_model.sh
 echo " "
-echo "Step 1 of 3 done."
+echo "Step 1 of 2 done."
 echo " "
 echo "Step 2 of 2: Training and persisting new model... "
 echo " "

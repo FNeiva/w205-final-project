@@ -102,9 +102,12 @@ time_preds = 0
 # Keep loop until we receive termination signal
 while True:
 
-    # Sets the update delay for 120 seconds
-    # That is so we can be safely inside Dark Weather API's free daily usage
-    upd_delay = 120
+    # Sets the update delay according to environment variable
+    # To be safely inside Dark Weather API's free daily usage with six cities, it must be above 120 seconds
+    try:
+        upd_delay = int(os.environ['DENGUE_PRED_STREAM_UPD_RATE'])
+    except:
+        upd_delay = 120
     time_start_pred = time.time()
     data = []
     # We need a separate list of cities from which we successfully gathered the weather forecast
