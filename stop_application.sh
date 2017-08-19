@@ -34,7 +34,7 @@ if [ ! -f $DIR/streaming.pid ]; then
 fi
 
 pid=`cat $DIR/streaming.pid`
-kill -SIGTERM $pid
+pkill -SIGTERM -g $(ps -o pgid -p $pid | grep -o [0-9]*)
 rm -f $DIR/streaming.pid
 
 echo "  * Weather Streaming service killed!"
@@ -46,7 +46,7 @@ if [ ! -f $DIR/visualization.pid ]; then
 fi
 
 pid=`cat $DIR/visualization.pid`
-kill -SIGTERM $pid
+pkill -SIGTERM -g $(ps -o pgid -p $pid | grep -o [0-9]*)
 rm -f $DIR/visualization.pid
 
 echo "  * Dashboard service killed!"
