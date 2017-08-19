@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 ##########################################################################################
 # Dengue Fever Prediction System
 # W205 Summer 2017 Final Project
@@ -10,8 +12,6 @@
 #
 ##########################################################################################
 
-
-# -*- coding: utf-8 -*-
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
