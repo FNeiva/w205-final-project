@@ -83,9 +83,9 @@ for record in records:
     city_data = dict(
         type = 'scattergeo',
         locationmode = 'ISO-3',
-        lon = coords["long"],
-        lat = coords["lat"],
-        text = text,
+        lon = [coords["long"]],
+        lat = [coords["lat"]],
+        text = [text],
         marker = dict(
             size = num_cases,
             color = colors[bubble_color],
@@ -99,8 +99,8 @@ layout = dict(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         showlegend = True,
         geo = dict(
-            scope='brazil',
-            #projection=dict( type='mercator' ),
+            scope='america',
+            projection=dict( type='Mercator' ),
             showland = True,
             landcolor = 'rgb(217, 217, 217)',
             subunitwidth=1,
