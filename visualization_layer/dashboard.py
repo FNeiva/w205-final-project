@@ -99,7 +99,7 @@ layout = dict(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         showlegend = True,
         geo = dict(
-            scope='americas',
+            scope='brazil',
             projection=dict( type='mercator' ),
             showland = True,
             landcolor = 'rgb(217, 217, 217)',
@@ -125,6 +125,8 @@ app.layout = html.Div(children=[
         }
     )
 ])
+
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
