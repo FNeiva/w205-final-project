@@ -99,8 +99,8 @@ layout = dict(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         showlegend = True,
         geo = dict(
-            scope='brazil',
-            projection=dict( type='mercator' ),
+            scope='usa',
+            #projection=dict( type='mercator' ),
             showland = True,
             landcolor = 'rgb(217, 217, 217)',
             subunitwidth=1,
