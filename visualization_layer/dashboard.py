@@ -90,7 +90,7 @@ for record in records:
             line = dict(width=0.5, color='rgb(40,40,40)'),
             sizemode = 'area'
         ),
-        name = city) )
+        name = city)
     live_data.append(city_data)
 
 layout = dict(
