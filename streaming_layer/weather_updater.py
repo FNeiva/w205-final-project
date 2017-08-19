@@ -112,39 +112,39 @@ while True:
     # Iterate through every city, gather the prediction for next week
     for city in cities:
         info = cities[city]
-        try:
-            # Gather weather prediction for next seven days
-            forecast = forecastio.load_forecast(ds_api_key, info["lat"], info["long"], units="si")
-            daily = forecast.daily()
-            # Get the data for the next seven days
-            daily_data = daily.data
-            # Remove the data point for current day
-            daily_data = daily_data[1:]
-            # Now get the values we need for each day
-            max_temps = [x.temperatureMax for x in daily_data]
-            min_temps = [x.temperatureMin for x in daily_data]
-            dew_point_temps = [x.dewPoint for x in daily_data]
-            rel_humidities = [x.rel_humidities for x in daily_data]
-            # Insert into array in the correct format
-            city_data = info["data"]
-            # Average temperature in Kelvin (Celsius + 273.15)
-            city_data.append(np.mean(max_temps+min_temps)+273.15)
-            # Dew Point temperature in Kelvin
-            city_data.append(np.mean(dew_point_temps)+273.15)
-            # Max temperature in K
-            city_data.append(np.max(max_temps)+273.15)
-            # Min temperature in K
-            city_data.append(np.min(min_temps)+273.15)
-            # Relative humidity in %
-            city_data.append(np.mean(rel_humidities)*100.)
-            # Average temperature in C
-            city_data.append(np.mean(max_temps+min_temps))
-            # Append city data to data array
-            data.append(city_data)
-            # We have successfully gathered the forecast for this city
-            cities_pred.append(city)
-        except:
-            print(str(datetime.now())+": Error gathering weather data for %s!" % city)
+        #try:
+        # Gather weather prediction for next seven days
+        forecast = forecastio.load_forecast(ds_api_key, info["lat"], info["long"], units="si")
+        daily = forecast.daily()
+        # Get the data for the next seven days
+        daily_data = daily.data
+        # Remove the data point for current day
+        daily_data = daily_data[1:]
+        # Now get the values we need for each day
+        max_temps = [x.temperatureMax for x in daily_data]
+        min_temps = [x.temperatureMin for x in daily_data]
+        dew_point_temps = [x.dewPoint for x in daily_data]
+        rel_humidities = [x.rel_humidities for x in daily_data]
+        # Insert into array in the correct format
+        city_data = info["data"]
+        # Average temperature in Kelvin (Celsius + 273.15)
+        city_data.append(np.mean(max_temps+min_temps)+273.15)
+        # Dew Point temperature in Kelvin
+        city_data.append(np.mean(dew_point_temps)+273.15)
+        # Max temperature in K
+        city_data.append(np.max(max_temps)+273.15)
+        # Min temperature in K
+        city_data.append(np.min(min_temps)+273.15)
+        # Relative humidity in %
+        city_data.append(np.mean(rel_humidities)*100.)
+        # Average temperature in C
+        city_data.append(np.mean(max_temps+min_temps))
+        # Append city data to data array
+        data.append(city_data)
+        # We have successfully gathered the forecast for this city
+        cities_pred.append(city)
+        #except:
+        #    print(str(datetime.now())+": Error gathering weather data for %s!" % city)
 
     # Parallelize array
     rdd = sc.parallelize(data)
