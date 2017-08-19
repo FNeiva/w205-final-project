@@ -17,6 +17,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import psycopg2
 import pandas as pd
+import numpy as np
 import plotly.plotly as py
 import plotly.graph_objs as go
 from datetime import datetime
