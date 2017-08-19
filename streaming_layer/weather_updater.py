@@ -124,7 +124,7 @@ while True:
         max_temps = [x.temperatureMax for x in daily_data]
         min_temps = [x.temperatureMin for x in daily_data]
         dew_point_temps = [x.dewPoint for x in daily_data]
-        rel_humidities = [x.rel_humidities for x in daily_data]
+        rel_humidities = [x.humidity for x in daily_data]
         # Insert into array in the correct format
         city_data = info["data"]
         # Average temperature in Kelvin (Celsius + 273.15)
