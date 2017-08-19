@@ -163,11 +163,11 @@ while True:
                                                 WHERE city=%s AND wkfrstday=%s;",
                                                 (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                                                  preds[i],cities_pred[i],wkfrstday))
-        cur.execute("INSERT INTO predictions (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
+        cur.execute("INSERT INTO predictions (city,wkfrstday,avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
                                                   rel_hum_pct, avg_temp_C, num_cases) \
-                        SELECT %s,%s,%s,%s,%s,%s,%s WHERE NOT EXISTS \
+                        SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s WHERE NOT EXISTS \
                         (SELECT 1 FROM predictions WHERE city=%s AND wkfrstday=%s);",
-                        (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
+                        (cities_pred[i],wkfrstday,data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                          preds[i],cities_pred[i],wkfrstday))
         conn.commit()
         conn.close()
