@@ -71,9 +71,9 @@ for record in records:
     coords = city_coords[city]
     text = city + "<br>Predicted number of cases: " + str(num_cases)
     text += "<br><br>Weather Forecast:<br>"
-    text += "Temperature: " + avg_temp_K-273.15 + "°C (average), " + max_temp_K-273.15 + "°C (max), " + min_temp_K-273.15 + "°C (min)<br>"
-    text += "Dew Point: " + dew_pt_temp_K-273.15 + "°C<br>"
-    text += "Relative Humidity: " + rel_hum_pct + "%"
+    text += "Temperature: " + str(avg_temp_K-273.15) + "°C (average), " + str(max_temp_K-273.15) + "°C (max), " + str(min_temp_K-273.15) + "°C (min)<br>"
+    text += "Dew Point: " + str(dew_pt_temp_K-273.15) + "°C<br>"
+    text += "Relative Humidity: " + str(rel_hum_pct) + "%"
     if num_cases > 300:
         bubble_color = "High"
     elif num_cases < 300 and num_cases > 80:
