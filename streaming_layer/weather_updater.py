@@ -159,13 +159,13 @@ while True:
     cur = conn.cursor()
     for i in range(len(cities_pred)):
         cur.execute("UPDATE predictions SET (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
-                                                rel_hum_pct, avg_temp_C, num_cases) = (%f,%f,%f,%f,%f,%f,%d)  \
+                                                rel_hum_pct, avg_temp_C, num_cases) = (%s,%s,%s,%s,%s,%s,%s)  \
                                                 WHERE city=%s AND wkfrstday=%s;",
                                                 (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                                                  preds[i],cities_pred[i],wkfrstday))
         cur.execute("INSERT INTO predictions (avg_temp_K, dew_pt_temp_K, max_temp_K, min_temp_K, \
                                                   rel_hum_pct, avg_temp_C, num_cases) \
-                        SELECT %f,%f,%f,%f,%f,%f,%d WHERE NOT EXISTS \
+                        SELECT %s,%s,%s,%s,%s,%s,%s WHERE NOT EXISTS \
                         (SELECT 1 FROM predictions WHERE city=%s AND wkfrstday=%s);",
                         (data[i][5],data[i][6],data[i][7],data[i][8],data[i][9],data[i][10],
                          preds[i],cities_pred[i],wkfrstday))
