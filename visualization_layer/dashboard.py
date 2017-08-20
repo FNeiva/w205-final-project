@@ -34,6 +34,7 @@ print(str(datetime.now())+": Initiating Dash context...")
 
 # Initiate Dash App
 app = dash.Dash()
+app.title = "Dengue Prediction System"
 
 print(str(datetime.now())+": Grabbing Mapbox Access Token...")
 try:
@@ -65,14 +66,14 @@ app.layout = html.Div(children=[
 
     dcc.Graph(id='historical-graph', animate=True),
 
-    html.Div(children=dcc.Slider(
+    dcc.Slider(
         id='year-slider',
         min=hist_df['year'].min(),
         max=hist_df['year'].max(),
         value=hist_df['year'].min(),
         step=None,
         marks={str(year): str(year) for year in hist_df['year'].unique()}
-    )),
+    ),
 
     dcc.Interval(
             id='update-interval',
