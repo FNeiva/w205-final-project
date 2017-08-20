@@ -35,11 +35,13 @@ print(str(datetime.now())+": Initiating Dash context...")
 # Initiate Dash App
 app = dash.Dash()
 
+print(str(datetime.now())+": Grabbing Mapbox Access Token...")
 try:
     mapbox_access_token = os.environ['MAPBOX_ACCESS_TOKEN']
 except:
     print(str(datetime.now())+": Unable to get Mapbox Access Token from environment variable!")
 
+print(str(datetime.now())+": Gathering historical data...")
 # Gather historical data from Hive database
 try:
     hive_conn = hive.connect('localhost')
@@ -167,7 +169,7 @@ def update_historical_graph(selected_year):
         traces.append(go.Scatter(
             x=df_by_city['wkofyear'],
             y=df_by_city['num_cases'],
-            text=df_by_city + "<br>Year: "+str(selected_year)+"<br>Week: "+df_by_city['wkofyear']+"<br>Number of dengue cases: "+str(df_by_city['num_cases']),
+            text=i+"<br>Year: "+str(selected_year)+"<br>Week: "+df_by_city['wkofyear']+"<br>Number of dengue cases: "+str(df_by_city['num_cases']),
             mode='lines+markers',
             opacity=0.7,
             marker={
