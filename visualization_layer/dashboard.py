@@ -39,6 +39,29 @@ try:
 except:
     print(str(datetime.now())+": Unable to get Mapbox Access Token from environment variable!")
 
+app.layout = html.Div(children=[
+    html.H1(children='Dengue Prediction System'),
+
+    html.Div(children='''
+        Live Dengue Predictions For The Next Week
+    '''),
+
+    dcc.Graph(
+        id='live-data-map',
+        figure={
+            'data': go.Data(live_data),
+            'layout': live_map_layout
+        }
+    ),
+
+    dcc.Interval(
+            id='update-interval',
+            interval=120*1000 # in milliseconds
+    )
+])
+
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+
 @app.callback(Output('live-data-map', 'figure'),events=[Event('update-interval', 'interval')])
 def update_graph_live():
 
@@ -110,29 +133,6 @@ live_map_layout = go.Layout(
             style='light'
         )
 )
-
-app.layout = html.Div(children=[
-    html.H1(children='Dengue Prediction System'),
-
-    html.Div(children='''
-        Live Dengue Predictions For The Next Week
-    '''),
-
-    dcc.Graph(
-        id='live-data-map',
-        figure={
-            'data': go.Data(live_data),
-            'layout': live_map_layout
-        }
-    ),
-
-    dcc.Interval(
-            id='update-interval',
-            interval=120*1000 # in milliseconds
-    )
-])
-
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
