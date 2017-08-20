@@ -36,6 +36,7 @@ print(str(datetime.now())+": Initiating Dash context...")
 app = dash.Dash()
 app.title = "Dengue Prediction System"
 
+# Pick Mapbox Access Token from environment variable
 print(str(datetime.now())+": Grabbing Mapbox Access Token...")
 try:
     mapbox_access_token = os.environ['MAPBOX_ACCESS_TOKEN']
@@ -50,11 +51,12 @@ try:
     hive_cur.execute('SELECT city,CAST(year AS INT) AS year, CAST(week_of_year AS INT) AS week_of_year, \
                       CAST(num_cases AS INT) AS num_cases FROM dengue_history ORDER BY year ASC, week_of_year ASC')
     records = hive_cur.fetchall()
+    # Transform into dataframe for ease of use
     hist_df = pd.DataFrame(records,columns=['city','year','wkofyear','num_cases'])
 except:
     print(str(datetime.now())+": Unable to get Historical Data from Hive Server!")
 
-# Application layout
+# Define application layout
 app.layout = html.Div(children=[
     html.H1(children='Dengue Prediction System'),
 
@@ -62,10 +64,13 @@ app.layout = html.Div(children=[
         Live Map may take up to a minute to appear and is updated every minute.
     '''),
 
+    # Add the live data map
     dcc.Graph(id='live-data-map'),
 
+    # Add the historical graph
     dcc.Graph(id='historical-graph', animate=True),
 
+    # Add the slider selector for the years
     dcc.Slider(
         id='year-slider',
         min=hist_df['year'].min(),
@@ -75,6 +80,7 @@ app.layout = html.Div(children=[
         marks={str(year): str(year) for year in hist_df['year'].unique()}
     ),
 
+    # Interval object that runs a callback function to update the live map
     dcc.Interval(
             id='update-interval',
             interval=60*1000 # in milliseconds
@@ -84,14 +90,14 @@ app.layout = html.Div(children=[
 # Style sheet for the page
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 
-
+# This is the callback function called by the interval timer to update the live map
 @app.callback(Output('live-data-map', 'figure'),events=[Event('update-interval', 'interval')])
 def update_graph_live():
 
     # Gather the data from the PostreSQL database
     wkfrstday = datetime.now().strftime("%Y-%m-%d")
     try:
-        # Connect and get
+        # Connect and get live prediction data for the following week
         conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
         cur = conn.cursor()
         cur.execute("SELECT * FROM predictions WHERE wkfrstday = '%s';" % wkfrstday)
@@ -143,6 +149,7 @@ def update_graph_live():
                         name = city)
         live_data.append(city_data)
 
+    # Define the live map layout
     live_map_layout = go.Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         autosize=True,
@@ -157,14 +164,17 @@ def update_graph_live():
         )
     )
 
+    # Set the figure and return it to plot
     figure = {"data": go.Data(live_data), "layout": live_map_layout}
-
     return figure
 
+# This is the callback function that is called whenever the slider selector is moved
 @app.callback(dash.dependencies.Output('historical-graph', 'figure'),[dash.dependencies.Input('year-slider', 'value')])
 def update_historical_graph(selected_year):
+    # Filter the dataframe by year
     filtered_df = hist_df[hist_df.year == selected_year]
     traces = []
+    # Get the data points for each city
     for i in filtered_df.city.unique():
         df_by_city = filtered_df[filtered_df['city'] == i]
         traces.append(go.Scatter(
@@ -180,6 +190,7 @@ def update_historical_graph(selected_year):
             name=i
         ))
 
+    # Return the new figure after selection
     return {
         'data': traces,
         'layout': go.Layout(
@@ -192,6 +203,7 @@ def update_historical_graph(selected_year):
         )
     }
 
+# Server start
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
     app.run_server(debug=False, host="0.0.0.0")
