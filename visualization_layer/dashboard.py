@@ -42,7 +42,7 @@ except:
 
 # Gather historical data from Hive database
 try:
-    hive_conn = hive.connect('localhost').cursor()
+    hive_conn = hive.connect('localhost')
     hive_cur = hive_conn.cursor()
     hive_cur.execute('SELECT city,CAST(year AS INT) AS year, CAST(week_of_year AS INT) AS week_of_year, \
                       CAST(num_cases AS INT) AS num_cases FROM dengue_history ORDER BY year ASC, week_of_year ASC')
