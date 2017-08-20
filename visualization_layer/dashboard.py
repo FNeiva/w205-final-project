@@ -185,7 +185,7 @@ def update_historical_graph(selected_year):
             title= "Historical Dengue Data",
             autosize=True,
             xaxis={'title': 'Epidemiological Week'},
-            yaxis={'title': 'Number of Cases'},
+            yaxis={'title': 'Number of Cases', 'autorange': True},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             legend={'x': 0, 'y': 1},
             hovermode='closest'
