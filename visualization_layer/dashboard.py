@@ -18,6 +18,7 @@ import dash_html_components as html
 import psycopg2
 import pandas as pd
 import numpy as np
+import os
 import plotly.plotly as py
 import plotly.graph_objs as go
 from datetime import datetime
@@ -31,6 +32,11 @@ print(str(datetime.now())+": Initiating Dash context...")
 
 # Initiate Dash App
 app = dash.Dash()
+
+try:
+    mapbox_access_token = os.environ['MAPBOX_ACCESS_TOKEN']
+except:
+    print(str(datetime.now())+": Unable to get Mapbox Access Token from environment variable!")
 
 # Gather the data from the PostreSQL database
 wkfrstday = datetime.now().strftime("%Y-%m-%d")
@@ -81,35 +87,61 @@ for record in records:
         bubble_color = "Medium"
     else:
         bubble_color = "Low"
-    city_data = dict(
-        type = 'scattergeo',
+#    city_data = dict(
+#        type = 'scattergeo',
+#        locationmode = 'ISO-3',
+#        lon = [coords["long"]],
+#        lat = [coords["lat"]],
+#        text = [text],
+#        marker = dict(
+#            size = np.log10(num_cases)*10,
+#            color = colors[bubble_color],
+#            line = dict(width=0.5, color='rgb(40,40,40)'),
+#            sizemode = 'area'
+#        ),
+#        name = city)
+    city_data = Scattermapbox(
+        mode = 'markers',
         locationmode = 'ISO-3',
         lon = [coords["long"]],
         lat = [coords["lat"]],
         text = [text],
-        marker = dict(
+        marker = Marker(
             size = np.log10(num_cases)*10,
             color = colors[bubble_color],
-            line = dict(width=0.5, color='rgb(40,40,40)'),
+            opacity = 0.7,
             sizemode = 'area'
         ),
         name = city)
     live_data.append(city_data)
 
-layout = dict(
+#layout = dict(
+#        title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
+#        showlegend = True,
+#        geo = dict(
+#            scope='america',
+#            projection=dict( type='Natural earth' ),
+#            showland = True,
+#            landcolor = 'rgb(217, 217, 217)',
+#            subunitwidth=1,
+#            countrywidth=1,
+#            subunitcolor="rgb(255, 255, 255)",
+#            countrycolor="rgb(255, 255, 255)"
+#        ),
+#    )
+
+layout = Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
-        showlegend = True,
-        geo = dict(
-            scope='america',
-            projection=dict( type='Natural earth' ),
-            showland = True,
-            landcolor = 'rgb(217, 217, 217)',
-            subunitwidth=1,
-            countrywidth=1,
-            subunitcolor="rgb(255, 255, 255)",
-            countrycolor="rgb(255, 255, 255)"
-        ),
-    )
+        autosize=True,
+        hovermode='closest',
+        showlegend=False,
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0),
+        pitch=0,
+        zoom=3,
+        style='light'
+)
 
 app.layout = html.Div(children=[
     html.H1(children='Dengue Prediction System'),
@@ -121,7 +153,7 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='live-data',
         figure={
-            'data': live_data,
+            'data': Data(live_data),
             'layout': layout
         }
     )
