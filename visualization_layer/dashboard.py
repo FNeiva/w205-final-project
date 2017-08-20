@@ -102,7 +102,6 @@ for record in records:
 #        name = city)
     city_data = go.Scattermapbox(
         mode = 'markers',
-        locationmode = 'ISO-3',
         lon = [coords["long"]],
         lat = [coords["lat"]],
         text = [text],
