@@ -123,7 +123,8 @@ app.layout = html.Div(children=[
             'data': go.Data(live_data),
             'layout': live_map_layout
         }
-    )
+    ),
+    
     dcc.Interval(
             id='update-interval',
             interval=120*1000 # in milliseconds
