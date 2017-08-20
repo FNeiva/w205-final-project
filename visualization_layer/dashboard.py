@@ -153,7 +153,7 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='live-data',
         figure={
-            'data': Data(live_data),
+            'data': go.Data(live_data),
             'layout': layout
         }
     )
