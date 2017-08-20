@@ -67,6 +67,7 @@ app.layout = html.Div(children=[
 
     dcc.Slider(
         id='year-slider',
+        autosize=True,
         min=hist_df['year'].min(),
         max=hist_df['year'].max(),
         value=hist_df['year'].min(),
