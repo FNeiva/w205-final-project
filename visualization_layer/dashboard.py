@@ -50,7 +50,7 @@ app.layout = html.Div(children=[
 
     dcc.Interval(
             id='update-interval',
-            interval=10*1000 # in milliseconds
+            interval=60*1000 # in milliseconds
     )
 ])
 
