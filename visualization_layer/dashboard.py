@@ -182,6 +182,8 @@ def update_historical_graph(selected_year):
     return {
         'data': traces,
         'layout': go.Layout(
+            title= "Historical Dengue Data",
+            autosize=True,
             xaxis={'title': 'Epidemiological Week'},
             yaxis={'title': 'Number of Cases'},
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
