@@ -169,7 +169,7 @@ def update_historical_graph(selected_year):
         traces.append(go.Scatter(
             x=df_by_city['wkofyear'],
             y=df_by_city['num_cases'],
-            text=i+"<br>Year: "+str(selected_year)+"<br>Week: "+str(df_by_city['wkofyear'])+"<br>Number of dengue cases: "+str(df_by_city['num_cases']),
+            text=i,
             mode='lines+markers',
             opacity=0.7,
             marker={
