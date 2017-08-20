@@ -38,62 +38,65 @@ try:
 except:
     print(str(datetime.now())+": Unable to get Mapbox Access Token from environment variable!")
 
-# Gather the data from the PostreSQL database
-wkfrstday = datetime.now().strftime("%Y-%m-%d")
-try:
-    # Connect and get
-    conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM predictions WHERE wkfrstday = '%s';" % wkfrstday)
-    records = cur.fetchall()
-    conn.commit()
-    conn.close()
-except:
-    print(str(datetime.now())+": Unable to get dengue cases update from database table with predictions!")
+@app.callback(Output('live-data-map', 'figure'),events=[Event('update-interval', 'interval')])
+def update_graph_live():
 
-# City coordinates for plotting
-city_coords = {"San Juan":{"lat":18.4374,"long":-66.0045},
-               "Iquitos":{"lat":-3.7847,"long":-73.3086},
-               "Rio de Janeiro":{"lat":-22.9111,"long":-43.1649},
-               "Brasilia":{"lat":-15.8697,"long":-47.9172},
-               "Sao Paulo":{"lat":-23.6273,"long":-46.6566},
-               "Salvador":{"lat":-12.9111,"long":-38.3312} }
+    # Gather the data from the PostreSQL database
+    wkfrstday = datetime.now().strftime("%Y-%m-%d")
+    try:
+        # Connect and get
+        conn = psycopg2.connect(database="denguepred", user="postgres", password="pass", host="localhost", port="5432")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM predictions WHERE wkfrstday = '%s';" % wkfrstday)
+        records = cur.fetchall()
+        conn.commit()
+        conn.close()
+    except:
+        print(str(datetime.now())+": Unable to get dengue cases update from database table with predictions!")
 
-# Set up the circles for the live map
-live_data = []
-for record in records:
-    index = record[0]
-    city = record[1]
-    wkfrstday = record[2].strftime("%b. %d, %Y")
-    avg_temp_K = record[3]
-    dew_pt_temp_K = record[4]
-    max_temp_K = record[5]
-    min_temp_K = record[6]
-    rel_hum_pct = record[7]
-    avg_temp_C = record[8]
-    num_cases = int(record[9])
-    coords = city_coords[city]
-    text = city + "<br>Predicted number of cases: " + str(num_cases)
-    text += "<br><br>Weather Forecast:<br>"
-    text += "Temperature: " + str(avg_temp_K-273.15) + "°C (average), " + str(max_temp_K-273.15) + "°C (max), " + str(min_temp_K-273.15) + "°C (min)<br>"
-    text += "Dew Point: " + str(dew_pt_temp_K-273.15) + "°C<br>"
-    text += "Relative Humidity: " + str(rel_hum_pct) + "%"
+    # City coordinates for plotting
+    city_coords = {"San Juan":{"lat":18.4374,"long":-66.0045},
+                   "Iquitos":{"lat":-3.7847,"long":-73.3086},
+                   "Rio de Janeiro":{"lat":-22.9111,"long":-43.1649},
+                   "Brasilia":{"lat":-15.8697,"long":-47.9172},
+                   "Sao Paulo":{"lat":-23.6273,"long":-46.6566},
+                   "Salvador":{"lat":-12.9111,"long":-38.3312} }
 
-    city_data = go.Scattermapbox(
-        mode = 'markers',
-        lon = [coords["long"]],
-        lat = [coords["lat"]],
-        text = [text],
-        marker = go.Marker(
-            size = np.log10(num_cases)*10,
-            color = "rgb(255,75,75)",
-            opacity = 0.8,
-            sizemode = 'area'
-        ),
-        name = city)
-    live_data.append(city_data)
+    # Set up the circles for the live map
+    live_data = []
+    for record in records:
+        index = record[0]
+        city = record[1]
+        wkfrstday = record[2].strftime("%b. %d, %Y")
+        avg_temp_K = record[3]
+        dew_pt_temp_K = record[4]
+        max_temp_K = record[5]
+        min_temp_K = record[6]
+        rel_hum_pct = record[7]
+        avg_temp_C = record[8]
+        num_cases = int(record[9])
+        coords = city_coords[city]
+        text = city + "<br>Predicted number of cases: " + str(num_cases)
+        text += "<br><br>Weather Forecast:<br>"
+        text += "Temperature: " + str(avg_temp_K-273.15) + "°C (average), " + str(max_temp_K-273.15) + "°C (max), " + str(min_temp_K-273.15) + "°C (min)<br>"
+        text += "Dew Point: " + str(dew_pt_temp_K-273.15) + "°C<br>"
+        text += "Relative Humidity: " + str(rel_hum_pct) + "%"
 
-layout = go.Layout(
+        city_data = go.Scattermapbox(
+                        mode = 'markers',
+                        lon = [coords["long"]],
+                        lat = [coords["lat"]],
+                        text = [text],
+                        marker = go.Marker(
+                            size = np.log10(num_cases)*10,
+                            color = "rgb(255,75,75)",
+                            opacity = 0.8,
+                            sizemode = 'area'
+                        ),
+                        name = city)
+        live_data.append(city_data)
+
+live_map_layout = go.Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         autosize=True,
         hovermode='closest',
@@ -115,11 +118,15 @@ app.layout = html.Div(children=[
     '''),
 
     dcc.Graph(
-        id='live-data',
+        id='live-data-map',
         figure={
             'data': go.Data(live_data),
-            'layout': layout
+            'layout': live_map_layout
         }
+    )
+    dcc.Interval(
+            id='update-interval',
+            interval=120*1000 # in milliseconds
     )
 ])
 
