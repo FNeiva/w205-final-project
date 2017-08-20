@@ -70,7 +70,7 @@ app.layout = html.Div(children=[
         value=hist_df['year'].min(),
         step=None,
         marks={str(year): str(year) for year in hist_df['year'].unique()}
-    )
+    ),
 
     dcc.Interval(
             id='update-interval',
