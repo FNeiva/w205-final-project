@@ -106,7 +106,7 @@ for record in records:
         lon = [coords["long"]],
         lat = [coords["lat"]],
         text = [text],
-        marker = Marker(
+        marker = go.Marker(
             size = np.log10(num_cases)*10,
             color = colors[bubble_color],
             opacity = 0.7,
