@@ -250,7 +250,7 @@ cd /data/w205-final-project
 
 5. After the application is started, it will collect application logs into the "logs" folder.
 
-6. To access the visualization interface, access the URL given by the start-up script in your browser.
+6. To access the visualization interface, access the URL given by the start-up script in your browser. Please allow a few seconds for the service to boot-up, as it needs to cache the historical dengue data.
 
 #### Stopping the application ####
 
