@@ -108,7 +108,7 @@ for record in records:
         marker = go.Marker(
             size = np.log10(num_cases)*10,
             color = colors[bubble_color],
-            opacity = 0.7,
+            opacity = 0.8,
             sizemode = 'area'
         ),
         name = city)
@@ -133,12 +133,12 @@ layout = go.Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         autosize=True,
         hovermode='closest',
-        showlegend=False,
+        showlegend=True,
         mapbox=dict(
             accesstoken=mapbox_access_token,
             bearing=0,
             pitch=0,
-            zoom=3,
+            zoom=1,
             style='light'
         )
 )
