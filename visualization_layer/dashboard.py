@@ -23,7 +23,7 @@ import os
 import plotly.plotly as py
 import plotly.graph_objs as go
 from datetime import datetime
-from pyhive import presto
+from pyhive import hive
 
 print("################################################")
 print("Dengue Fever Prediction System")
@@ -40,6 +40,18 @@ try:
 except:
     print(str(datetime.now())+": Unable to get Mapbox Access Token from environment variable!")
 
+# Gather historical data from Hive database
+try:
+    hive_conn = hive.connect('localhost').cursor()
+    hive_cur = hive_conn.cursor()
+    hive_cur.execute('SELECT city,CAST(year AS INT) AS year, CAST(week_of_year AS INT) AS week_of_year, \
+                      CAST(num_cases AS INT) AS num_cases FROM dengue_history ORDER BY year ASC, week_of_year ASC')
+    records = hive_cur.fetchall()
+    hist_df = pd.DataFrame(records,columns=['city','year','wkofyear','num_cases'])
+except:
+    print(str(datetime.now())+": Unable to get Historical Data from Hive Server!")
+
+# Application layout
 app.layout = html.Div(children=[
     html.H1(children='Dengue Prediction System'),
 
@@ -49,13 +61,26 @@ app.layout = html.Div(children=[
 
     dcc.Graph(id='live-data-map'),
 
+    dcc.Graph(id='historical-graph', animate=True),
+
+    dcc.Slider(
+        id='year-slider',
+        min=hist_df['year'].min(),
+        max=hist_df['year'].max(),
+        value=hist_df['year'].min(),
+        step=None,
+        marks={str(year): str(year) for year in hist_df['year'].unique()}
+    )
+
     dcc.Interval(
             id='update-interval',
             interval=60*1000 # in milliseconds
     )
 ])
 
+# Style sheet for the page
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
+
 
 @app.callback(Output('live-data-map', 'figure'),events=[Event('update-interval', 'interval')])
 def update_graph_live():
@@ -132,6 +157,36 @@ def update_graph_live():
     figure = {"data": go.Data(live_data), "layout": live_map_layout}
 
     return figure
+
+@app.callback(dash.dependencies.Output('historical-graph', 'figure'),[dash.dependencies.Input('year-slider', 'value')])
+def update_historical_graph(selected_year):
+    filtered_df = hist_df[hist_df.year == selected_year]
+    traces = []
+    for i in filtered_df.city.unique():
+        df_by_city = filtered_df[filtered_df['city'] == i]
+        traces.append(go.Scatter(
+            x=df_by_city['wkofyear'],
+            y=df_by_city['num_cases'],
+            text=df_by_city + "<br>Year: "+str(selected_year)+"<br>Week: "+df_by_city['wkofyear']+"<br>Number of dengue cases: "+str(df_by_city['num_cases']),
+            mode='lines+markers',
+            opacity=0.7,
+            marker={
+                'size': 15,
+                'line': {'width': 0.5, 'color': 'white'}
+            },
+            name=i
+        ))
+
+    return {
+        'data': traces,
+        'layout': go.Layout(
+            xaxis={'title': 'Epidemiological Week'},
+            yaxis={'title': 'Number of Cases'},
+            margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+            legend={'x': 0, 'y': 1},
+            hovermode='closest'
+        )
+    }
 
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
