@@ -136,10 +136,11 @@ layout = go.Layout(
         showlegend=False,
         mapbox=dict(
             accesstoken=mapbox_access_token,
-            bearing=0),
-        pitch=0,
-        zoom=3,
-        style='light'
+            bearing=0,
+            pitch=0,
+            zoom=3,
+            style='light'
+        )
 )
 
 app.layout = html.Div(children=[
