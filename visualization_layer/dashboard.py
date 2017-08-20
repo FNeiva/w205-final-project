@@ -114,23 +114,23 @@ def update_graph_live():
                         name = city)
         live_data.append(city_data)
 
-        live_map_layout = go.Layout(
-            title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
-            autosize=True,
-            hovermode='closest',
-            showlegend=True,
-            mapbox=dict(
-                accesstoken=mapbox_access_token,
-                bearing=0,
-                pitch=0,
-                zoom=1,
-                style='light'
-            )
+    live_map_layout = go.Layout(
+        title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
+        autosize=True,
+        hovermode='closest',
+        showlegend=True,
+        mapbox=dict(
+            accesstoken=mapbox_access_token,
+            bearing=0,
+            pitch=0,
+            zoom=1,
+            style='light'
         )
+    )
 
-        figure = {"data": go.Data(live_data), "layout": live_map_layout}
+    figure = {"data": go.Data(live_data), "layout": live_map_layout}
 
-        return figure
+    return figure
 
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
