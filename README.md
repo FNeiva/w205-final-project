@@ -248,11 +248,11 @@ cd /data/w205-final-project
 
 4. After the application is started, it will collect application logs into the "logs" folder.
 
-5. To access the visualization interface, access http://<your AMI public hostname>:8050 on your browser. **Please note: ** the script may often show that the application is available at an address like "http://ip-XXX-XX-XX-XX.ec2.internal:8050". However, accessing this address won't work. This is because AWS EC2 instances have more than one hostname, and the one presented is used only inside AWS internal network. To access your application, use the same public hostname you use to access your instance.
+5. To access the visualization interface, access http://<your AMI public hostname>:8050 on your browser. **Please note:** the script may often show that the application is available at an address like "http://ip-XXX-XX-XX-XX.ec2.internal:8050". However, accessing this address won't work. This is because AWS EC2 instances have more than one hostname, and the one presented is used only inside AWS internal network. To access your application, use the same public hostname you use to access your instance.
 
 #### Stopping the application ####
 
-**Please note: ** you do not need to stop the application to perform data updates on the data layer or re-train the machine learning model. Run the configuration scripts for the data layer and machine learning layer while the application is still running, and just stop and start it after they are done. This is designed to reduce the amount of application downtime, as loading the data as re-training the machine learning model may take some time.
+**Please note:** you do not need to stop the application to perform data updates on the data layer or re-train the machine learning model. Run the configuration scripts for the data layer and machine learning layer while the application is still running, and just stop and start it after they are done. This is designed to reduce the amount of application downtime, as loading the data as re-training the machine learning model may take some time.
 
 To stop the application, follow these steps.
 
