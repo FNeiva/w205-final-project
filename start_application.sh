@@ -33,6 +33,12 @@ if [ -z ${DARK_SKY_API_KEY} ]; then
       exit 1
 fi
 
+if [ -z ${MAPBOX_ACCESS_TOKEN} ]; then
+      echo "ERROR: Mapbox Access Token not found!"
+      echo "Please run '. ./setup_visualization_layer.sh' to configure the application"
+      exit 1
+fi
+
 echo "  * Booting up Weather Streaming service..."
 nohup /data/spark15/bin/spark-submit $DIR/streaming_layer/weather_updater.py > $DIR/logs/streaming.log 2> /dev/null &
 pid=$!

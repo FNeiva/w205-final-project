@@ -81,7 +81,7 @@ Before running or configuring the application, make sure you have the following 
 - Started PostgreSQL (as **root**, run */data/start_postgres.sh*)
 - Started Hadoop (as **root**, run */root/start-hadoop.sh*)
 - Started the Hive Metastore (as **w205**, run */data/start_metastore.sh*)
-- Started Hive Server (as **w205**, run *hive --service server &*)
+- Started Hive Server (as **w205**, run *hive --service hiveserver2 &*)
 
 To be able to access the visualization interface through a web browser, you will also need to open port **8050** on your EC2 instance through the AWS console.
 
@@ -246,9 +246,11 @@ cd /data/w205-final-project
 . ./start_application.sh
 ~~~~
 
-4. After the application is started, it will collect application logs into the "logs" folder.
+4. **Please note:** after you start the application, a few seconds later some output from Spark may appear on screen. It is just Hive gathering the historical data to create the plots in the visualization layer. Just wait until an "OK" message is displayed on screen and it will be ready. This will only happen once, as the visualization layer caches historical data when it starts.
 
-5. To access the visualization interface, access http://<your AMI public hostname>:8050 on your browser. **Please note:** the script may often show that the application is available at an address like "http://ip-XXX-XX-XX-XX.ec2.internal:8050". However, accessing this address won't work. This is because AWS EC2 instances have more than one hostname, and the one presented is used only inside AWS internal network. To access your application, use the same public hostname you use to access your instance.
+5. After the application is started, it will collect application logs into the "logs" folder.
+
+6. To access the visualization interface, access http://<your AMI public hostname>:8050 on your browser. **Please note:** the script may often show that the application is available at an address like "http://ip-XXX-XX-XX-XX.ec2.internal:8050". However, accessing this address won't work. This is because AWS EC2 instances have more than one hostname, and the one presented is used only inside AWS internal network. To access your application, use the same public hostname you use to access your instance.
 
 #### Stopping the application ####
 
@@ -279,3 +281,7 @@ cd /data/w205-final-project
 #### Troubleshooting ####
 
 The steps above have been tested many times, by different people and always using the specified AWS AMI. However, we understand that no matter the amount of testing problems may still occur. If that is the case, please get in touch with the authors or open an issue in our project GitHub webpage at [https://github.com/FNeiva/w205-final-project/issues](https://github.com/FNeiva/w205-final-project/issues "Project Issues Page").
+
+**"Error gathering weather data for <city>!" error appearing in streaming.log**
+
+Those errors can be caused by either a faulty Dark Sky API Key or by weather data unavailable for the city in the Dark Sky service. Check the error by accessing the Dark Sky website and trying their sample API call using the web browser. If you receive a 403 error, it could be because you reached the maximum daily amount of free API calls allowed. If it works, your API Key may have been renewed and changed. If that's the case, re-run the setup script for the Visualization layer and insert the new credentials, then stop and start the application.

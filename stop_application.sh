@@ -46,7 +46,10 @@ if [ ! -f $DIR/visualization.pid ]; then
 fi
 
 pid=`cat $DIR/visualization.pid`
-pkill -SIGTERM -g $(ps -o pgid -p $pid | grep -o [0-9]*)
+pgid=`ps -o pgid -p $pid | grep -o [0-9]*`
+if [ ! -z "$pgid" ];
+      pkill -SIGTERM -g $pgid
+fi
 rm -f $DIR/visualization.pid
 
 echo "  * Dashboard service killed!"
