@@ -47,7 +47,7 @@ fi
 
 pid=`cat $DIR/visualization.pid`
 pgid=`ps -o pgid -p $pid | grep -o [0-9]*`
-if [ ! -z "$pgid" ];
+if [ ! -z "$pgid" ]; then
       pkill -SIGTERM -g $pgid
 fi
 rm -f $DIR/visualization.pid
