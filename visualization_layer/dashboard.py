@@ -100,7 +100,7 @@ for record in records:
 #            sizemode = 'area'
 #        ),
 #        name = city)
-    city_data = Scattermapbox(
+    city_data = go.Scattermapbox(
         mode = 'markers',
         locationmode = 'ISO-3',
         lon = [coords["long"]],
@@ -130,7 +130,7 @@ for record in records:
 #        ),
 #    )
 
-layout = Layout(
+layout = go.Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
         autosize=True,
         hovermode='closest',
