@@ -104,7 +104,7 @@ for record in records:
         text = [text],
         marker = go.Marker(
             size = np.log10(num_cases)*10,
-            color = rgb(255,75,75),
+            color = "rgb(255,75,75)",
             opacity = 0.8,
             sizemode = 'area'
         ),
