@@ -46,8 +46,7 @@ app.layout = html.Div(children=[
         Live Dengue Predictions For The Next Week
     '''),
 
-    dcc.Graph(id='live-data-map'}
-    ),
+    dcc.Graph(id='live-data-map'),
 
     dcc.Interval(
             id='update-interval',
