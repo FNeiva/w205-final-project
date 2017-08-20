@@ -57,6 +57,10 @@ pip2.7 install psycopg2                                            # Install Psy
 pip install psycopg2                                            # Install PsycoPG2 to use PostgreSQL
 echo "PsycoPG2 installed!"
 echo " "
+echo "Installing PyHive package for Python 2.7... "
+pip2.7 install PyHive                                           # Install PsycoPG2 to use PostgreSQL
+echo "PsycoPG2 installed!"
+echo " "
 echo "Installing Dark Sky API Wrapper package for Python 2.7... "
 pip2.7 install python-forecastio                                   # Weather API for Dark Sky
 pip install python-forecastio                                   # Weather API for Dark Sky

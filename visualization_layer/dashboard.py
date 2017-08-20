@@ -23,6 +23,7 @@ import os
 import plotly.plotly as py
 import plotly.graph_objs as go
 from datetime import datetime
+from pyhive import presto
 
 print("################################################")
 print("Dengue Fever Prediction System")
@@ -43,7 +44,7 @@ app.layout = html.Div(children=[
     html.H1(children='Dengue Prediction System'),
 
     html.Div(children='''
-        Live Dengue Predictions For The Next Week
+        Live Map may take up to a minute to appear and is updated every minute.
     '''),
 
     dcc.Graph(id='live-data-map'),
