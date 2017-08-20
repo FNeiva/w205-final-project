@@ -65,15 +65,14 @@ app.layout = html.Div(children=[
 
     dcc.Graph(id='historical-graph', animate=True),
 
-    dcc.Slider(
+    html.Div(children=dcc.Slider(
         id='year-slider',
-        autosize=True,
         min=hist_df['year'].min(),
         max=hist_df['year'].max(),
         value=hist_df['year'].min(),
         step=None,
         marks={str(year): str(year) for year in hist_df['year'].unique()}
-    ),
+    )),
 
     dcc.Interval(
             id='update-interval',
