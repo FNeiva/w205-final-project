@@ -78,25 +78,7 @@ for record in records:
     text += "Temperature: " + str(avg_temp_K-273.15) + "°C (average), " + str(max_temp_K-273.15) + "°C (max), " + str(min_temp_K-273.15) + "°C (min)<br>"
     text += "Dew Point: " + str(dew_pt_temp_K-273.15) + "°C<br>"
     text += "Relative Humidity: " + str(rel_hum_pct) + "%"
-#    if num_cases > 300:
-#        bubble_color = "High"
-#    elif num_cases < 300 and num_cases > 80:
-#        bubble_color = "Medium"
-#    else:
-#        bubble_color = "Low"
-#    city_data = dict(
-#        type = 'scattergeo',
-#        locationmode = 'ISO-3',
-#        lon = [coords["long"]],
-#        lat = [coords["lat"]],
-#        text = [text],
-#        marker = dict(
-#            size = np.log10(num_cases)*10,
-#            color = colors[bubble_color],
-#            line = dict(width=0.5, color='rgb(40,40,40)'),
-#            sizemode = 'area'
-#        ),
-#        name = city)
+
     city_data = go.Scattermapbox(
         mode = 'markers',
         lon = [coords["long"]],
@@ -110,21 +92,6 @@ for record in records:
         ),
         name = city)
     live_data.append(city_data)
-
-#layout = dict(
-#        title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
-#        showlegend = True,
-#        geo = dict(
-#            scope='america',
-#            projection=dict( type='Natural earth' ),
-#            showland = True,
-#            landcolor = 'rgb(217, 217, 217)',
-#            subunitwidth=1,
-#            countrywidth=1,
-#            subunitcolor="rgb(255, 255, 255)",
-#            countrycolor="rgb(255, 255, 255)"
-#        ),
-#    )
 
 layout = go.Layout(
         title = 'Live Prediction Of Number of Dengue Cases<br>Week Starting On ' + wkfrstday,
@@ -160,4 +127,4 @@ app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 
 print(str(datetime.now())+": Starting Dash server...")
 if __name__ == '__main__':
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
