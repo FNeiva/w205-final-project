@@ -58,9 +58,6 @@ city_coords = {"San Juan":{"lat":18.4374,"long":-66.0045},
                "Brasilia":{"lat":-15.8697,"long":-47.9172},
                "Sao Paulo":{"lat":-23.6273,"long":-46.6566},
                "Salvador":{"lat":-12.9111,"long":-38.3312} }
-colors = { "High": "rgb(255,75,75)",
-           "Medium": "rgb(255,208,75)",
-           "Low": "rgb(178,255,75)"}
 
 # Set up the circles for the live map
 live_data = []
@@ -81,12 +78,12 @@ for record in records:
     text += "Temperature: " + str(avg_temp_K-273.15) + "°C (average), " + str(max_temp_K-273.15) + "°C (max), " + str(min_temp_K-273.15) + "°C (min)<br>"
     text += "Dew Point: " + str(dew_pt_temp_K-273.15) + "°C<br>"
     text += "Relative Humidity: " + str(rel_hum_pct) + "%"
-    if num_cases > 300:
-        bubble_color = "High"
-    elif num_cases < 300 and num_cases > 80:
-        bubble_color = "Medium"
-    else:
-        bubble_color = "Low"
+#    if num_cases > 300:
+#        bubble_color = "High"
+#    elif num_cases < 300 and num_cases > 80:
+#        bubble_color = "Medium"
+#    else:
+#        bubble_color = "Low"
 #    city_data = dict(
 #        type = 'scattergeo',
 #        locationmode = 'ISO-3',
@@ -107,7 +104,7 @@ for record in records:
         text = [text],
         marker = go.Marker(
             size = np.log10(num_cases)*10,
-            color = colors[bubble_color],
+            color = rgb(255,75,75),
             opacity = 0.8,
             sizemode = 'area'
         ),
