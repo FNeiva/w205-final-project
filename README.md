@@ -250,7 +250,7 @@ cd /data/w205-final-project
 
 5. After the application is started, it will collect application logs into the "logs" folder.
 
-6. To access the visualization interface, access http://<your AMI public hostname>:8050 on your browser. **Please note:** the script may often show that the application is available at an address like "http://ip-XXX-XX-XX-XX.ec2.internal:8050". However, accessing this address won't work. This is because AWS EC2 instances have more than one hostname, and the one presented is used only inside AWS internal network. To access your application, use the same public hostname you use to access your instance.
+6. To access the visualization interface, access the URL given by the start-up script in your browser.
 
 #### Stopping the application ####
 

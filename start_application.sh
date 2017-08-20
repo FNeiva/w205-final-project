@@ -54,6 +54,6 @@ echo $pid >> $DIR/visualization.pid
 echo " "
 echo "Dengue Prediction System started!"
 echo " "
-hostname=`hostname`
+hostname=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
 echo "Dashboard available at http://$hostname:8050"
 echo "To stop the application, run stop_application.sh"
