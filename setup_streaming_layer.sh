@@ -46,11 +46,11 @@ echo "Please insert your Dark Sky Weather API Key and press [ENTER]"
 read ds_key
 echo " "
 echo "Please insert the desired weather streaming update rate (in seconds) and press [ENTER]"
-echo "Be aware that one API call is made per tracked city at every update. (default: 120)"
+echo "Be aware that one API call is made per tracked city at every update. (default: 600)"
 read update_rate
 
 if [ -z ${update_rate} ]; then
-      update_rate=120
+      update_rate=600
 fi
 
 echo " "
